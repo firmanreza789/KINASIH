@@ -1,0 +1,346 @@
+/* WARNA UTAMA KINASIH */
+
+:root {
+    /* Warna primary dari desain */
+    --primary: #1D553E;
+
+    /* Warna secondary dari desain */
+    --secondary: #619244;
+
+    /* Warna background */
+    --background: #F8FAF9;
+
+    /* Warna teks utama */
+    --text: #1F2937;
+
+    /* Warna teks tambahan */
+    --text-muted: #6B7280;
+
+    /* Warna putih */
+    --white: #FFFFFF;
+}
+
+
+/* BODY */
+
+body {
+    /* Menghilangkan margin bawaan browser */
+    margin: 0;
+
+    /* Warna background halaman */
+    background-color: var(--background);
+
+    /* Warna teks */
+    color: var(--text);
+
+    /* Font */
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+
+/* HEADER */
+
+.header {
+    /* Warna primary KINASIH */
+    background-color: var(--primary);
+
+    /* Memberikan ruang di dalam header */
+    padding: 18px 0;
+}
+
+
+.brand {
+    /* Membuat logo dan tulisan berada dalam satu baris */
+    display: flex;
+
+    /* Menyelaraskan secara vertikal */
+    align-items: center;
+
+    /* Jarak antara logo dan tulisan */
+    gap: 12px;
+}
+
+
+/* Tanda wajib diisi */
+
+.required {
+    color: #dc3545;
+}
+
+
+/* Pesan error */
+
+.error-message {
+    display: none;
+    margin-top: 6px;
+    color: #dc3545;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+
+/* Logo */
+
+.logo {
+    width: 50px;
+    height: 50px;
+
+    /* Background putih hanya di sekitar logo */
+    background-color: #ffffff;
+
+    /* Membuat area putih berbentuk kotak dengan sudut membulat */
+    border-radius: 8px;
+
+    /* Jarak logo dengan area putih */
+    padding: 4px;
+
+    /* Supaya gambar tidak gepeng */
+    object-fit: contain;
+}
+
+
+/* Nama KINASIH */
+
+.brand h1 {
+    margin: 0;
+    color: var(--white);
+    font-size: 22px;
+    font-weight: 700;
+}
+
+
+/* Deskripsi di bawah nama */
+
+.brand p {
+    margin: 2px 0 0;
+    color: var(--white);
+    font-size: 13px;
+}
+
+
+/* KONTEN UTAMA */
+
+.main-content {
+    /* Memberikan jarak atas dan bawah */
+    padding: 60px 0;
+
+    /* Minimal tinggi agar footer berada di bawah */
+    min-height: calc(100vh - 150px);
+}
+
+
+/* CARD LAPORAN */
+
+.report-card {
+    /* Warna card */
+    background-color: var(--white);
+
+    /* Membatasi lebar agar tidak terlalu lebar */
+    max-width: 520px;
+
+    /* Membuat card berada di tengah */
+    margin: 0 auto;
+
+    /* Jarak isi card dengan tepi */
+    padding: 35px;
+
+    /* Membuat sudut card sedikit melengkung */
+    border-radius: 16px;
+
+    /* Bayangan tipis */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+
+/* JUDUL */
+
+.report-card h2 {
+    margin-bottom: 8px;
+    color: var(--primary);
+    font-size: 28px;
+    font-weight: 700;
+}
+
+
+/* Deskripsi */
+
+.description {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+
+/* LABEL FORM */
+
+.form-label {
+    /* Membuat tulisan label lebih tegas */
+    font-weight: 600;
+    color: var(--text);
+}
+
+
+/* INPUT TANGGAL */
+
+.date-input {
+    /* Tinggi input agar mudah ditekan di HP */
+    min-height: 48px;
+
+    /* Border menggunakan warna abu-abu */
+    border: 1px solid #D1D5DB;
+
+    border-radius: 10px;
+}
+
+
+/* Ketika input dipilih */
+
+.date-input:focus {
+    border-color: var(--secondary);
+
+    /* Menghilangkan outline bawaan */
+    box-shadow: 0 0 0 3px rgba(97, 146, 68, 0.15);
+}
+
+
+/* Ketika input mengalami error */
+
+.date-input.input-error {
+    border-color: #dc3545;
+}
+
+
+/* TOMBOL EXPORT */
+
+.btn-export {
+    /* Warna utama tombol */
+    background-color: var(--primary);
+
+    /* Warna tulisan */
+    color: var(--white);
+
+    /* Tinggi tombol */
+    min-height: 50px;
+
+    /* Tulisan lebih tegas */
+    font-weight: 600;
+
+    /* Sudut tombol */
+    border-radius: 10px;
+
+    /* Menghilangkan border */
+    border: none;
+}
+
+
+/* Ketika mouse berada di tombol */
+
+.btn-export:hover {
+    /* Berubah ke warna secondary */
+    background-color: var(--secondary);
+
+    color: var(--white);
+}
+
+
+/* Ketika tombol ditekan */
+
+.btn-export:active {
+    transform: scale(0.98);
+}
+
+
+/* STATUS EXPORT */
+
+.status-message {
+    display: none;
+
+    /* Jarak dari tombol */
+    margin-top: 16px;
+
+    /* Jarak isi dengan tepi */
+    padding: 12px;
+
+    border-radius: 8px;
+
+    /* Posisi teks di tengah */
+    text-align: center;
+
+    font-size: 14px;
+    font-weight: 600;
+}
+
+
+/* Saat proses export */
+
+.status-loading {
+    display: block;
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+
+/* Saat export berhasil */
+
+.status-success {
+    display: block;
+    background-color: #d1e7dd;
+    color: #0f5132;
+}
+
+
+/* Saat export gagal */
+
+.status-error {
+    display: block;
+    background-color: #f8d7da;
+    color: #842029;
+}
+
+
+/* FOOTER */
+
+.footer {
+    /* Posisi teks di tengah */
+    text-align: center;
+
+    /* Jarak footer */
+    padding: 20px;
+
+    /* Warna teks */
+    color: var(--text-muted);
+
+    font-size: 13px;
+}
+
+
+/* RESPONSIVE UNTUK HP */
+
+@media (max-width: 576px) {
+    /* Mengurangi padding konten pada layar kecil */
+    .main-content {
+        padding: 35px 15px;
+    }
+
+    /* Mengurangi ukuran card */
+    .report-card {
+        padding: 25px 20px;
+        border-radius: 14px;
+    }
+
+    /* Ukuran judul di HP */
+    .report-card h2 {
+        font-size: 24px;
+    }
+
+    /* Logo sedikit lebih kecil */
+    .logo {
+        width: 44px;
+        height: 44px;
+    }
+
+    /* Nama KINASIH */
+    .brand h1 {
+        font-size: 20px;
+    }
+}

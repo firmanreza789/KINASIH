@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="id">
+    <head>
+    <meta charset="UTF-8" />
+
+    <!-- tampilan responsive di HP -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Laporan Timbangan - KINASIH</title>
+
+    <!-- Bootstrap layout dan komponen dasar -->
+    <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    />
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css" />
+    </head>
+
+    <body>
+    <!-- HEADER -->
+
+    <header class="header">
+    <div class="container">
+        <!-- Logo dan nama aplikasi -->
+        <div class="brand">
+        <img src="assets/logokinasih.png" alt="Logo KINASIH" class="logo" />
+
+        <div>
+            <h1>KINASIH</h1>
+            <p>Sistem Laporan Timbangan Pintar</p>
+        </div>
+        </div>
+    </div>
+    </header>
+
+    <!-- KONTEN UTAMA -->
+
+    <main class="main-content">
+    <div class="container">
+        <!-- Card laporan -->
+        <div class="report-card">
+        <!-- Judul -->
+        <div class="text-center mb-4">
+            <h2>Laporan Timbangan</h2>
+            <p class="description">Pilih periode untuk mengunduh laporan.</p>
+        </div>
+
+        <!-- FORM PERIODE -->
+
+        <!-- Tanggal mulai -->
+        <div class="mb-3">
+            <label for="tanggalMulai" class="form-label">
+            Tanggal Mulai <span class="required">*</span>
+            </label>
+
+            <input
+            type="date"
+            id="tanggalMulai"
+            class="form-control date-input"
+            />
+
+            <div id="errorMulai" class="error-message">⚠ Wajib diisi</div>
+        </div>
+
+        <!-- Tanggal akhir -->
+        <div class="mb-4">
+            <label for="tanggalAkhir" class="form-label">
+            Tanggal Akhir <span class="required">*</span>
+            </label>
+
+            <input
+            type="date"
+            id="tanggalAkhir"
+            class="form-control date-input"
+            />
+
+            <div id="errorAkhir" class="error-message">⚠ Wajib diisi</div>
+        </div>
+        <div id="errorTanggal" class="error-message">
+            ⚠ Tanggal mulai tidak boleh setelah tanggal akhir.
+        </div>
+
+        <!-- TOMBOL EXPORT -->
+
+        <button type="button" id="btnExport" class="btn btn-export w-100">
+            Export Laporan
+        </button>
+
+        <!-- STATUS -->
+
+        <!--
+                    Status ini awalnya disembunyikan.
+                    Nanti JavaScript akan menampilkannya
+                    ketika proses export berjalan.
+                -->
+        <div id="status" class="status-message" aria-live="polite"></div>
+        </div>
+    </div>
+    </main>
+
+    <!-- FOOTER -->
+
+    <footer class="footer">
+    <p>© 2026 KINASIH</p>
+    <p>Dikembangkan oleh Eclipse</p>
+    </footer>
+    <!-- Library untuk membuat file Excel -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <!-- JavaScript -->
+    <script src="js/script.js"></script>
+    </body>
+</html>
