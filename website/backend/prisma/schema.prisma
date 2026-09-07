@@ -1,0 +1,104 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model KategoriSampah {
+  idKategori Int           @id @default(autoincrement())
+  nama       String        @unique
+
+  jenisSampah JenisSampah[]
+
+  @@map("kategori_sampah")
+}
+
+model JenisSampah {
+  idJenis    Int     @id @default(autoincrement())
+  idKategori Int
+  nama       String
+  hargaPerKG Decimal @db.Decimal(14, 2)
+
+  kategoriSampah  KategoriSampah    @relation(fields: [idKategori], references: [idKategori], onDelete: Restrict, onUpdate: Cascade)
+  detailTransaksi DetailTransaksi[]
+
+  @@index([idKategori])
+  @@map("jenis_sampah")
+}
+
+model Nasabah {
+  idNasabah Int     @id @default(autoincrement())
+  noKK      String
+  nama      String
+  saldo     Decimal @default(0) @db.Decimal(14, 2)
+
+  transaksi Transaksi[]
+  penarikan Penarikan[]
+
+  @@index([noKK])
+  @@map("nasabah")
+}
+
+model Transaksi {
+  idTransaksi Int      @id @default(autoincrement())
+  idNasabah   Int
+  requestId   String   @unique
+  tanggal     DateTime @default(now())
+  totalBerat  Decimal  @default(0) @db.Decimal(14, 3)
+  totalNilai  Decimal  @default(0) @db.Decimal(14, 2)
+
+  nasabah         Nasabah          @relation(fields: [idNasabah], references: [idNasabah], onDelete: Restrict, onUpdate: Cascade)
+  detailTransaksi DetailTransaksi[]
+
+  @@index([idNasabah])
+  @@index([tanggal])
+  @@map("transaksi")
+}
+
+model DetailTransaksi {
+  idDetail    Int     @id @default(autoincrement())
+  idTransaksi Int
+  idJenis     Int
+  beratKg     Decimal @db.Decimal(14, 3)
+  hargaPerKG  Decimal @db.Decimal(14, 2)
+  subTotal    Decimal @db.Decimal(14, 2)
+
+  transaksi   Transaksi   @relation(fields: [idTransaksi], references: [idTransaksi], onDelete: Cascade, onUpdate: Cascade)
+  jenisSampah JenisSampah @relation(fields: [idJenis], references: [idJenis], onDelete: Restrict, onUpdate: Cascade)
+
+  @@index([idTransaksi])
+  @@index([idJenis])
+  @@map("detail_transaksi")
+}
+
+model Penarikan {
+  idPenarikan     Int      @id @default(autoincrement())
+  idNasabah       Int
+  tanggal         DateTime @default(now())
+  jumlahPenarikan Decimal  @db.Decimal(14, 2)
+  saldoSebelum    Decimal  @db.Decimal(14, 2)
+  saldoSesudah    Decimal  @db.Decimal(14, 2)
+
+  nasabah Nasabah @relation(fields: [idNasabah], references: [idNasabah], onDelete: Restrict, onUpdate: Cascade)
+
+  @@index([idNasabah])
+  @@index([tanggal])
+  @@map("penarikan")
+}
+
+model SyncLog {
+  idSync     Int      @id @default(autoincrement())
+  waktu      DateTime @default(now())
+  tipeData   String
+  idData     Int
+  aksi       String
+  status     String
+  keterangan String?
+
+  @@index([tipeData, idData])
+  @@index([waktu])
+  @@map("sync_log")
+}
