@@ -8,7 +8,7 @@ const errorAkhir = document.getElementById("errorAkhir");
 const status = document.getElementById("status");
 
 // URL backend
-const API_URL = "https://kinasih-ten.vercel.app/";
+const API_URL = "https://kinasih-backend.vercel.app";
 
 // Tombol export
 btnExport.addEventListener("click", async function () {
