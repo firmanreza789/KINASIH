@@ -6,6 +6,7 @@ const errorTanggal = document.getElementById("errorTanggal");
 const errorMulai = document.getElementById("errorMulai");
 const errorAkhir = document.getElementById("errorAkhir");
 const status = document.getElementById("status");
+
 // Ambil elemen cek saldo
 const noKK = document.getElementById("noKK");
 const btnCekSaldo = document.getElementById("btnCekSaldo");
@@ -181,6 +182,56 @@ btnExport.addEventListener("click", async function () {
 
         // Aktifkan tombol kembali
         btnExport.disabled = false;
+    }
+
+});
+
+
+// Tombol cek saldo
+btnCekSaldo.addEventListener("click", async function () {
+
+    const nomorKK = noKK.value.trim();
+
+    // Cek nomor KK
+    if (!nomorKK) {
+        errorKK.textContent = "⚠ Wajib diisi";
+        errorKK.style.display = "block";
+        noKK.classList.add("input-error");
+        return;
+    }
+
+    // Cek nomor KK harus 16 digit
+    if (!/^\d{16}$/.test(nomorKK)) {
+        errorKK.textContent = "⚠ Nomor KK harus 16 digit";
+        errorKK.style.display = "block";
+        noKK.classList.add("input-error");
+        return;
+    }
+
+    errorKK.style.display = "none";
+    noKK.classList.remove("input-error");
+
+    // Tampilkan loading
+    saldoResult.style.display = "block";
+    saldoResult.textContent = "⏳ Mengecek saldo...";
+
+    btnCekSaldo.disabled = true;
+
+    try {
+
+        // Proses ambil saldo dari backend nanti di sini
+
+    } catch (error) {
+
+        // Tampilkan error
+        console.error(error);
+
+        saldoResult.textContent = "⚠ Gagal mengambil data saldo.";
+
+    } finally {
+
+        // Aktifkan tombol kembali
+        btnCekSaldo.disabled = false;
     }
 
 });
