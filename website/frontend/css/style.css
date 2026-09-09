@@ -297,6 +297,31 @@ body {
     color: #842029;
 }
 
+/* CARD CEK SALDO */
+
+.balance-card {
+    margin-top: 30px;
+}
+
+
+/* HASIL SALDO */
+
+.saldo-result {
+    display: none;
+
+    /* Jarak dari tombol */
+    margin-top: 20px;
+
+    /* Jarak isi dengan tepi */
+    padding: 20px;
+
+    /* Background hasil */
+    background-color: var(--background);
+
+    /* Sudut hasil */
+    border-radius: 10px;
+}
+
 
 /* FOOTER */
 
