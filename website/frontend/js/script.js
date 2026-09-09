@@ -6,6 +6,11 @@ const errorTanggal = document.getElementById("errorTanggal");
 const errorMulai = document.getElementById("errorMulai");
 const errorAkhir = document.getElementById("errorAkhir");
 const status = document.getElementById("status");
+// Ambil elemen cek saldo
+const noKK = document.getElementById("noKK");
+const btnCekSaldo = document.getElementById("btnCekSaldo");
+const errorKK = document.getElementById("errorKK");
+const saldoResult = document.getElementById("saldoResult");
 
 // URL backend
 const API_URL = "https://kinasih-backend.vercel.app";
