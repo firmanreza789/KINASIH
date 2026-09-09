@@ -7,8 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Laporan Timbangan - KINASIH</title>
-    
-        <link rel="icon" type="image/png" href="assets/logokinasih.png">
+
+    <link rel="icon" type="image/png" href="assets/logokinasih.png">
 
     <!-- Bootstrap layout dan komponen dasar -->
     <link
@@ -41,8 +41,10 @@
 
     <main class="main-content">
     <div class="container">
+
         <!-- Card laporan -->
         <div class="report-card">
+
         <!-- Judul -->
         <div class="text-center mb-4">
             <h2>Laporan Timbangan</h2>
@@ -80,6 +82,7 @@
 
             <div id="errorAkhir" class="error-message">⚠ Wajib diisi</div>
         </div>
+
         <div id="errorTanggal" class="error-message">
             ⚠ Tanggal mulai tidak boleh setelah tanggal akhir.
         </div>
@@ -99,6 +102,51 @@
                 -->
         <div id="status" class="status-message" aria-live="polite"></div>
         </div>
+
+
+        <!-- Card cek saldo -->
+
+        <div class="report-card balance-card">
+
+        <!-- Judul -->
+        <div class="text-center mb-4">
+            <h2>Cek Saldo Warga</h2>
+            <p class="description">
+                Masukkan nomor KK untuk melihat saldo.
+            </p>
+        </div>
+
+        <!-- Nomor KK -->
+        <div class="mb-4">
+            <label for="noKK" class="form-label">
+            Nomor KK <span class="required">*</span>
+            </label>
+
+            <input
+            type="text"
+            id="noKK"
+            class="form-control date-input"
+            placeholder="Masukkan nomor KK"
+            maxlength="16"
+            />
+
+            <div id="errorKK" class="error-message">
+            ⚠ Wajib diisi
+            </div>
+        </div>
+
+        <!-- TOMBOL CEK SALDO -->
+
+        <button type="button" id="btnCekSaldo" class="btn btn-export w-100">
+            Cek Saldo
+        </button>
+
+        <!-- HASIL SALDO -->
+
+        <div id="saldoResult" class="saldo-result"></div>
+
+        </div>
+
     </div>
     </main>
 
@@ -108,8 +156,10 @@
     <p>© 2026 KINASIH</p>
     <p>Dikembangkan oleh Eclipse</p>
     </footer>
+
     <!-- Library untuk membuat file Excel -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
     <!-- JavaScript -->
     <script src="js/script.js"></script>
     </body>
