@@ -10,7 +10,13 @@ import syncLogRoutes from "./routes/sync-log.routes";
 
 const app = express();
 
-app.use(cors());
+// PENGATURAN CORS BARU UNTUK MENGIZINKAN X-API-KEY
+app.use(cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-API-KEY']
+}));
+
 app.use(express.json());
 
 app.use("/api/kategori-sampah", kategoriSampahRoutes);
