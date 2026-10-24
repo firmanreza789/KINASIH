@@ -79,6 +79,10 @@ btnExport.addEventListener("click", async function () {
             return tanggal >= mulai && tanggal <= akhir;
         });
 
+        console.log("Semua transaksi:", result.data);
+console.log("Periode:", mulai, "sampai", akhir);
+console.log("Transaksi setelah filter:", transaksi);
+
         const dataLaporan = [];
 
         transaksi.forEach(function (item) {
