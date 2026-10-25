@@ -143,6 +143,15 @@ const jenisTidakDitemukan = jenisIds.filter(
   (id) => !jenisDitemukan.has(id)
 );
 
+console.log("ID yang diminta ESP32:", jenisIds);
+console.log(
+  "ID yang ditemukan database:",
+  jenisSampah.map((item) => ({
+    idJenis: item.idJenis,
+    nama: item.nama,
+  }))
+);
+console.log("ID yang tidak ditemukan:", jenisTidakDitemukan);      
 if (jenisTidakDitemukan.length > 0) {
   console.error(
     "ID jenis sampah tidak ditemukan:",
