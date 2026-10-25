@@ -1,7 +1,3 @@
-// ==========================================
-// KINASIH - EXPORT EXCEL DAN CEK SALDO
-// ==========================================
-
 // Ambil elemen HTML
 const tanggalMulai = document.getElementById("tanggalMulai");
 const tanggalAkhir = document.getElementById("tanggalAkhir");
@@ -11,7 +7,7 @@ const errorMulai = document.getElementById("errorMulai");
 const errorAkhir = document.getElementById("errorAkhir");
 const status = document.getElementById("status");
 
-// Elemen cek saldo
+// Ambil elemen cek saldo
 const noKK = document.getElementById("noKK");
 const btnCekSaldo = document.getElementById("btnCekSaldo");
 const errorKK = document.getElementById("errorKK");
@@ -19,19 +15,15 @@ const saldoResult = document.getElementById("saldoResult");
 
 // URL backend
 const API_URL = "https://kinasih-backend.vercel.app";
+// API KEY DARI KETUA
 const API_KEY = "kinasih_secret_device_key_2026";
 
-// ==========================================
-// EXPORT TRANSAKSI KE EXCEL
-// ==========================================
-
+// Tombol export
 btnExport.addEventListener("click", async function () {
     const mulai = tanggalMulai.value;
     const akhir = tanggalAkhir.value;
-
     let valid = true;
 
-    // Validasi tanggal mulai
     if (!mulai) {
         errorMulai.style.display = "block";
         tanggalMulai.classList.add("input-error");
@@ -41,7 +33,6 @@ btnExport.addEventListener("click", async function () {
         tanggalMulai.classList.remove("input-error");
     }
 
-    // Validasi tanggal akhir
     if (!akhir) {
         errorAkhir.style.display = "block";
         tanggalAkhir.classList.add("input-error");
@@ -53,7 +44,6 @@ btnExport.addEventListener("click", async function () {
 
     if (!valid) return;
 
-    // Pastikan tanggal mulai tidak melewati tanggal akhir
     if (mulai > akhir) {
         errorTanggal.style.display = "block";
         tanggalMulai.classList.add("input-error");
@@ -70,188 +60,91 @@ btnExport.addEventListener("click", async function () {
     btnExport.disabled = true;
 
     try {
-        // Ambil data transaksi dari backend
+        // MENGIRIM REQUEST DENGAN API KEY
         const response = await fetch(`${API_URL}/api/transaksi`, {
-            method: "GET",
+            method: 'GET',
             headers: {
-                "X-API-KEY": API_KEY,
-                "Content-Type": "application/json"
+                'X-API-KEY': API_KEY,
+                'Content-Type': 'application/json'
             }
         });
-
         const result = await response.json();
 
         if (!response.ok || !result.success) {
-            throw new Error(
-                result.message || "Gagal mengambil data transaksi"
-            );
+            throw new Error(result.message || "Gagal mengambil data transaksi");
         }
 
-        // Pastikan data transaksi berbentuk array
-        const semuaTransaksi = Array.isArray(result.data)
-            ? result.data
-            : [];
-
-        // Filter transaksi berdasarkan tanggal
-        const transaksi = semuaTransaksi.filter(function (item) {
-            if (!item || !item.tanggal_waktu) {
-                return false;
-            }
-
-            // Ambil tanggal dengan format YYYY-MM-DD
-            const tanggal = String(item.tanggal_waktu).slice(0, 10);
-
+        const transaksi = result.data.filter(function (item) {
+            const tanggal = item.tanggal_waktu.substring(0, 10);
             return tanggal >= mulai && tanggal <= akhir;
         });
 
-        // Log untuk pemeriksaan di Console browser
-        console.log(
-            "Total transaksi dari API:",
-            semuaTransaksi.length
-        );
+        
 
-        console.log(
-            "Transaksi sesuai periode:",
-            transaksi.length
-        );
-
-        console.log(
-            "Data transaksi sesuai periode:",
-            transaksi
-        );
-
-        // Siapkan baris laporan Excel
         const dataLaporan = [];
 
         transaksi.forEach(function (item) {
-            const items = Array.isArray(item.items)
-                ? item.items
-                : [];
-
-            items.forEach(function (detail) {
+            item.items.forEach(function (detail) {
                 dataLaporan.push({
                     No: dataLaporan.length + 1,
-
-                    Tanggal: String(item.tanggal_waktu).slice(0, 10),
-
-                    "No KK": item.no_kk || "",
-
-                    "Nama Nasabah": item.nama || "",
-
-                    "Jenis Sampah": detail.nama_jenis || "",
-
-                    "Berat (Kg)": Number(detail.berat_kg) || 0,
-
-                    "Harga/Kg": Number(detail.harga_per_kg) || 0,
-
-                    Subtotal: Number(detail.subtotal) || 0
+                    Tanggal: new Date(item.tanggal_waktu).toLocaleDateString("id-ID"),
+                    "No KK": item.no_kk,                
+                    "Nama Nasabah": item.nama,          
+                    "Jenis Sampah": detail.nama_jenis,  
+                    "Berat (Kg)": Number(detail.berat_kg), 
+                    "Harga/Kg": Number(detail.harga_per_kg), 
+                    Subtotal: Number(detail.subtotal)   
                 });
             });
         });
 
-        // Periksa apakah ada transaksi pada periode tersebut
         if (dataLaporan.length === 0) {
             status.className = "status-message status-error";
-
-            status.textContent =
-                "⚠ Tidak ada detail transaksi pada periode tersebut. Periksa tanggal dan Console browser.";
-
+            status.textContent = "⚠ Tidak ada transaksi pada periode tersebut.";
             return;
         }
 
-        // Pastikan library XLSX sudah dimuat
-        if (typeof XLSX === "undefined") {
-            throw new Error(
-                "Library XLSX belum dimuat pada halaman HTML"
-            );
-        }
-
-        // Buat worksheet dan workbook
         const worksheet = XLSX.utils.json_to_sheet(dataLaporan);
-
         const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Laporan");
 
-        XLSX.utils.book_append_sheet(
-            workbook,
-            worksheet,
-            "Laporan"
-        );
-
-        // Atur lebar kolom Excel
         worksheet["!cols"] = [
-            { wch: 5 },
-            { wch: 15 },
-            { wch: 20 },
-            { wch: 22 },
-            { wch: 20 },
-            { wch: 12 },
-            { wch: 15 },
-            { wch: 15 }
+            { wch: 5 },   
+            { wch: 15 },  
+            { wch: 20 },  
+            { wch: 22 },  
+            { wch: 20 },  
+            { wch: 12 },  
+            { wch: 15 },   
+            { wch: 15 }   
         ];
 
-        // Format harga dan subtotal menjadi Rupiah
-        const range = XLSX.utils.decode_range(
-            worksheet["!ref"]
-        );
+        const range = XLSX.utils.decode_range(worksheet["!ref"]);
 
         for (let row = 1; row <= range.e.r; row++) {
-            const hargaCell =
-                worksheet[
-                    XLSX.utils.encode_cell({
-                        r: row,
-                        c: 6
-                    })
-                ];
+            const hargaCell = worksheet[XLSX.utils.encode_cell({ r: row, c: 6 })];
+            const subtotalCell = worksheet[XLSX.utils.encode_cell({ r: row, c: 7 })];
 
-            const subtotalCell =
-                worksheet[
-                    XLSX.utils.encode_cell({
-                        r: row,
-                        c: 7
-                    })
-                ];
-
-            if (hargaCell) {
-                hargaCell.z = '"Rp" #,##0';
-            }
-
-            if (subtotalCell) {
-                subtotalCell.z = '"Rp" #,##0';
-            }
+            if (hargaCell) hargaCell.z = '"Rp" #,##0';
+            if (subtotalCell) subtotalCell.z = '"Rp" #,##0';
         }
 
-        // Download file Excel
-        const namaFile =
-            `Laporan_KINASIH_${mulai}_${akhir}.xlsx`;
-
+        const namaFile = `Laporan_KINASIH_${mulai}_${akhir}.xlsx`;
         XLSX.writeFile(workbook, namaFile);
 
         status.className = "status-message status-success";
-
-        status.textContent =
-            `✓ Laporan berhasil diexport (${dataLaporan.length} baris detail transaksi).`;
+        status.textContent = "✓ Laporan berhasil diexport.";
 
     } catch (error) {
-        console.error("Export error:", error);
-
+        console.error(error);
         status.className = "status-message status-error";
-
-        status.textContent =
-            `⚠ Gagal mengambil data transaksi. (${error.message})`;
-
+        status.textContent = `⚠ Gagal mengambil data transaksi. (${error.message})`;
     } finally {
         btnExport.disabled = false;
     }
 });
 
-// ==========================================
-// CEK SALDO NASABAH
-// ==========================================
-
-// Bagian ini baru melakukan validasi.
-// Belum mengambil saldo karena endpoint cek saldo
-// belum tersedia pada kode backend yang diberikan.
-
+// Tombol cek saldo
 btnCekSaldo.addEventListener("click", async function () {
     const nomorKK = noKK.value.trim();
 
@@ -263,9 +156,7 @@ btnCekSaldo.addEventListener("click", async function () {
     }
 
     if (!/^\d{16}$/.test(nomorKK)) {
-        errorKK.textContent =
-            "⚠ Nomor KK harus 16 digit";
-
+        errorKK.textContent = "⚠ Nomor KK harus 16 digit";
         errorKK.style.display = "block";
         noKK.classList.add("input-error");
         return;
@@ -275,7 +166,20 @@ btnCekSaldo.addEventListener("click", async function () {
     noKK.classList.remove("input-error");
 
     saldoResult.style.display = "block";
+    saldoResult.textContent = "⏳ Mengecek saldo...";
+    btnCekSaldo.disabled = true;
 
-    saldoResult.textContent =
-        "Fitur cek saldo belum terhubung ke endpoint backend.";
+    try {
+        // Contoh jika API cek saldo juga pakai API Key
+        /*
+        const response = await fetch(`${API_URL}/api/nasabah/saldo?no_kk=${nomorKK}`, {
+            headers: { 'X-API-KEY': API_KEY }
+        });
+        */
+    } catch (error) {
+        console.error(error);
+        saldoResult.textContent = "⚠ Gagal mengambil data saldo.";
+    } finally {
+        btnCekSaldo.disabled = false;
+    }
 });
