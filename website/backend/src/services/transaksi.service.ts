@@ -121,25 +121,36 @@ export async function createTransaksi(
         throw new Error("DETAIL_KOSONG");
       }
 
-      // =====================================================
-      // 4. CEK JENIS SAMPAH
-      // =====================================================
+// =====================================================
+// 4. CEK JENIS SAMPAH
+// =====================================================
 
-      const jenisIds = detail.map(
-        (item) => item.idJenis
-      );
+const jenisIds = [...new Set(detail.map((item) => item.idJenis))];
 
-      const jenisSampah = await tx.jenisSampah.findMany({
-        where: {
-          idJenis: {
-            in: jenisIds,
-          },
-        },
-      });
+const jenisSampah = await tx.jenisSampah.findMany({
+  where: {
+    idJenis: {
+      in: jenisIds,
+    },
+  },
+});
 
-      if (jenisSampah.length !== jenisIds.length) {
-        throw new Error("JENIS_SAMPAH_NOT_FOUND");
-      }
+const jenisDitemukan = new Set(
+  jenisSampah.map((item) => item.idJenis)
+);
+
+const jenisTidakDitemukan = jenisIds.filter(
+  (id) => !jenisDitemukan.has(id)
+);
+
+if (jenisTidakDitemukan.length > 0) {
+  console.error(
+    "ID jenis sampah tidak ditemukan:",
+    jenisTidakDitemukan
+  );
+
+  throw new Error("JENIS_SAMPAH_NOT_FOUND");
+}
 
       // =====================================================
       // 5. HITUNG DETAIL TRANSAKSI
