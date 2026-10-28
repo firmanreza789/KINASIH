@@ -147,38 +147,62 @@ btnExport.addEventListener("click", async function () {
 // Tombol cek saldo
 btnCekSaldo.addEventListener("click", async function () {
     const nomorKK = noKK.value.trim();
-
+    // 1. Validasi Input Nomor KK
     if (!nomorKK) {
         errorKK.textContent = "⚠ Wajib diisi";
         errorKK.style.display = "block";
         noKK.classList.add("input-error");
         return;
     }
-
     if (!/^\d{16}$/.test(nomorKK)) {
-        errorKK.textContent = "⚠ Nomor KK harus 16 digit";
+        errorKK.textContent = "⚠ Nomor KK harus 16 digit angka";
         errorKK.style.display = "block";
         noKK.classList.add("input-error");
         return;
     }
-
     errorKK.style.display = "none";
     noKK.classList.remove("input-error");
-
+    // 2. Loading State
     saldoResult.style.display = "block";
+    saldoResult.className = "saldo-result status-loading text-center p-3";
     saldoResult.textContent = "⏳ Mengecek saldo...";
     btnCekSaldo.disabled = true;
-
     try {
-        // Contoh jika API cek saldo juga pakai API Key
-        /*
-        const response = await fetch(`${API_URL}/api/nasabah/saldo?no_kk=${nomorKK}`, {
-            headers: { 'X-API-KEY': API_KEY }
+        // 3. Ambil data nasabah dari backend (tanpa ganggu key transaksi)
+        const response = await fetch(`${API_URL}/api/nasabah`);
+        const result = await response.json();
+        if (!response.ok || !result.success) {
+            throw new Error(result.message || "Gagal menghubungi server");
+        }
+        // 4. Cari warga berdasarkan nomor KK
+        const nasabah = result.data.find(function (item) {
+            return String(item.noKK).trim() === nomorKK;
         });
-        */
+        if (!nasabah) {
+            saldoResult.className = "saldo-result status-error text-danger mt-3 text-center";
+            saldoResult.textContent = "⚠ Nomor KK tidak terdaftar dalam sistem.";
+        } else {
+            // Format Rupiah rapi (contoh: Rp 113.450)
+            const saldoFormatted = new Intl.NumberFormat("id-ID", {
+                style: "currency",
+                currency: "IDR",
+                minimumFractionDigits: 0
+            }).format(nasabah.saldo || 0);
+            saldoResult.className = "saldo-result status-success mt-3 p-3 border rounded bg-light text-start";
+            saldoResult.innerHTML = `
+                <div style="font-size: 0.9rem; color: #666;">Nama Nasabah:</div>
+                <div style="font-size: 1.15rem; font-weight: bold; color: #222;">${nasabah.nama}</div>
+                <hr style="margin: 8px 0;">
+                <div style="font-size: 0.9rem; color: #666;">Total Saldo Tabungan:</div>
+                <div style="font-size: 1.35rem; font-weight: bold; color: #2e7d32;">
+                    ${saldoFormatted}
+                </div>
+            `;
+        }
     } catch (error) {
         console.error(error);
-        saldoResult.textContent = "⚠ Gagal mengambil data saldo.";
+        saldoResult.className = "saldo-result status-error text-danger mt-3 text-center";
+        saldoResult.textContent = `⚠ Gagal mengambil data saldo. (${error.message})`;
     } finally {
         btnCekSaldo.disabled = false;
     }
