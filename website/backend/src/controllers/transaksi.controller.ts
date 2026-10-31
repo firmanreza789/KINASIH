@@ -181,6 +181,7 @@ export async function createTransaksiController(req: Request, res: Response) {
       if (error.message === "JENIS_SAMPAH_NOT_FOUND") return res.status(404).json({ success: false, message: "Jenis sampah tidak ditemukan" });
     }
 
-    return res.status(500).json({ success: false, message: "Gagal membuat transaksi" });
+    return res.status(500).json({ success: false, message: "Gagal membuat transaksi",
+    error: error instanceof Error ? error.message : String(error) });
   }
 }
