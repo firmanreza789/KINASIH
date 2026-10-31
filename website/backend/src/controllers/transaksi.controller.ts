@@ -53,10 +53,7 @@ function formatDataKeJSON(
     total_nilai: Number(transaksi.totalNilai) || 0,
     items: (transaksi.detailTransaksi || []).map((item: any) => ({
       id_jenis: item.idJenis,
-      nama_jenis:
-        item.jenisSampah?.namaJenis ||
-        item.jenisSampah?.nama ||
-        "",
+      nama_jenis: item.jenisSampah?.nama || "",
       berat_kg: Number(item.beratKg) || 0,
       harga_per_kg: Number(item.hargaPerKG) || 0,
       subtotal: Number(item.subTotal) || 0,
@@ -150,6 +147,7 @@ export async function getTransaksiDetail(
 // =========================
 // CREATE TRANSAKSI
 // NASABAH DICARI BERDASARKAN NO. KK
+// HARGA DIAMBIL DARI ESP32
 // =========================
 export async function createTransaksiController(
   req: Request,
@@ -165,7 +163,6 @@ export async function createTransaksiController(
       });
     }
 
-    // id_nasabah dari ESP32 tidak digunakan sebagai patokan
     const {
       device_id,
       id_lokal,
@@ -202,10 +199,7 @@ export async function createTransaksiController(
 
     const lokalId = Number(id_lokal);
 
-    if (
-      !Number.isInteger(lokalId) ||
-      lokalId <= 0
-    ) {
+    if (!Number.isInteger(lokalId) || lokalId <= 0) {
       return res.status(400).json({
         success: false,
         message:
@@ -215,7 +209,7 @@ export async function createTransaksiController(
 
     // =========================
     // CARI NASABAH DI DATABASE
-    // BERDASARKAN NO KK
+    // BERDASARKAN NO. KK
     // =========================
     const noKK = String(no_kk).trim();
 
@@ -240,12 +234,8 @@ export async function createTransaksiController(
       });
     }
 
-    // ID NASABAH SELALU DIAMBIL DARI DATABASE
+    // ID nasabah menggunakan data dari database
     const nasabahId = nasabah.idNasabah;
-
-    console.log(
-      `Nasabah ditemukan: ID ${nasabahId} - ${nasabah.nama}`
-    );
 
     // =========================
     // VALIDASI ITEMS
@@ -258,9 +248,11 @@ export async function createTransaksiController(
       });
     }
 
+    // Harga ikut dikirim ke service
     const detailValidated: {
       idJenis: number;
       beratKg: number;
+      hargaPerKG: number;
     }[] = [];
 
     for (const item of items) {
@@ -271,18 +263,15 @@ export async function createTransaksiController(
       ) {
         return res.status(400).json({
           success: false,
-          message:
-            "Format items transaksi tidak valid",
+          message: "Format items transaksi tidak valid",
         });
       }
 
       const jenisId = Number(item.id_jenis);
       const berat = Number(item.berat_kg);
+      const harga = Number(item.harga_per_kg);
 
-      if (
-        !Number.isInteger(jenisId) ||
-        jenisId <= 0
-      ) {
+      if (!Number.isInteger(jenisId) || jenisId <= 0) {
         return res.status(400).json({
           success: false,
           message:
@@ -290,14 +279,20 @@ export async function createTransaksiController(
         });
       }
 
-      if (
-        !Number.isFinite(berat) ||
-        berat <= 0
-      ) {
+      if (!Number.isFinite(berat) || berat <= 0) {
         return res.status(400).json({
           success: false,
           message:
             "berat_kg harus berupa angka lebih dari 0",
+        });
+      }
+
+      // Harga boleh 0 untuk testing atau jenis sampah tanpa harga
+      if (!Number.isFinite(harga) || harga < 0) {
+        return res.status(400).json({
+          success: false,
+          message:
+            "harga_per_kg harus berupa angka dan tidak boleh negatif",
         });
       }
 
@@ -312,6 +307,7 @@ export async function createTransaksiController(
       detailValidated.push({
         idJenis: jenisId,
         beratKg: berat,
+        hargaPerKG: harga,
       });
     }
 
