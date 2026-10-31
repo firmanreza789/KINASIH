@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { prisma } from "../lib/prisma";
 
 import {
   getAllTransaksi,
@@ -17,7 +18,7 @@ function hasMaxDecimals(value: number, maxDecimals: number) {
 }
 
 // =========================
-// FORMAT DATA KE JSON
+// HELPER FORMAT JSON
 // =========================
 function formatDataKeJSON(
   transaksi: any,
@@ -50,7 +51,6 @@ function formatDataKeJSON(
     tanggal_waktu: formattedDate,
     total_berat: Number(transaksi.totalBerat) || 0,
     total_nilai: Number(transaksi.totalNilai) || 0,
-
     items: (transaksi.detailTransaksi || []).map((item: any) => ({
       id_jenis: item.idJenis,
       nama_jenis:
@@ -67,10 +67,7 @@ function formatDataKeJSON(
 // =========================
 // GET SEMUA TRANSAKSI
 // =========================
-export async function getTransaksi(
-  req: Request,
-  res: Response
-) {
+export async function getTransaksi(req: Request, res: Response) {
   try {
     const apiKey = req.header("X-API-KEY");
 
@@ -152,6 +149,7 @@ export async function getTransaksiDetail(
 
 // =========================
 // CREATE TRANSAKSI
+// NASABAH DICARI BERDASARKAN NO. KK
 // =========================
 export async function createTransaksiController(
   req: Request,
@@ -167,23 +165,27 @@ export async function createTransaksiController(
       });
     }
 
+    // id_nasabah dari ESP32 tidak digunakan sebagai patokan
     const {
       device_id,
       id_lokal,
-      id_nasabah,
+      no_kk,
       items,
     } = req.body;
 
+    // =========================
+    // VALIDASI DATA WAJIB
+    // =========================
     if (
-      id_nasabah === undefined ||
       device_id === undefined ||
       id_lokal === undefined ||
+      no_kk === undefined ||
       items === undefined
     ) {
       return res.status(400).json({
         success: false,
         message:
-          "device_id, id_lokal, id_nasabah, dan items wajib diisi",
+          "device_id, id_lokal, no_kk, dan items wajib diisi",
       });
     }
 
@@ -200,7 +202,10 @@ export async function createTransaksiController(
 
     const lokalId = Number(id_lokal);
 
-    if (!Number.isInteger(lokalId) || lokalId <= 0) {
+    if (
+      !Number.isInteger(lokalId) ||
+      lokalId <= 0
+    ) {
       return res.status(400).json({
         success: false,
         message:
@@ -208,16 +213,43 @@ export async function createTransaksiController(
       });
     }
 
-    const nasabahId = Number(id_nasabah);
+    // =========================
+    // CARI NASABAH DI DATABASE
+    // BERDASARKAN NO KK
+    // =========================
+    const noKK = String(no_kk).trim();
 
-    if (!Number.isInteger(nasabahId) || nasabahId <= 0) {
+    if (!noKK) {
       return res.status(400).json({
         success: false,
-        message:
-          "id_nasabah harus berupa bilangan bulat positif",
+        message: "No. KK tidak boleh kosong",
       });
     }
 
+    const nasabah = await prisma.nasabah.findFirst({
+      where: {
+        noKK: noKK,
+      },
+    });
+
+    if (!nasabah) {
+      return res.status(404).json({
+        success: false,
+        message:
+          "Nasabah dengan No. KK tersebut tidak ditemukan",
+      });
+    }
+
+    // ID NASABAH SELALU DIAMBIL DARI DATABASE
+    const nasabahId = nasabah.idNasabah;
+
+    console.log(
+      `Nasabah ditemukan: ID ${nasabahId} - ${nasabah.nama}`
+    );
+
+    // =========================
+    // VALIDASI ITEMS
+    // =========================
     if (!Array.isArray(items) || items.length === 0) {
       return res.status(400).json({
         success: false,
@@ -226,11 +258,9 @@ export async function createTransaksiController(
       });
     }
 
-    // Data yang akan dikirim ke service
     const detailValidated: {
       idJenis: number;
       beratKg: number;
-      hargaPerKG: number;
     }[] = [];
 
     for (const item of items) {
@@ -241,15 +271,18 @@ export async function createTransaksiController(
       ) {
         return res.status(400).json({
           success: false,
-          message: "Format items transaksi tidak valid",
+          message:
+            "Format items transaksi tidak valid",
         });
       }
 
       const jenisId = Number(item.id_jenis);
       const berat = Number(item.berat_kg);
-      const harga = Number(item.harga_per_kg);
 
-      if (!Number.isInteger(jenisId) || jenisId <= 0) {
+      if (
+        !Number.isInteger(jenisId) ||
+        jenisId <= 0
+      ) {
         return res.status(400).json({
           success: false,
           message:
@@ -257,7 +290,10 @@ export async function createTransaksiController(
         });
       }
 
-      if (!Number.isFinite(berat) || berat <= 0) {
+      if (
+        !Number.isFinite(berat) ||
+        berat <= 0
+      ) {
         return res.status(400).json({
           success: false,
           message:
@@ -273,22 +309,15 @@ export async function createTransaksiController(
         });
       }
 
-      if (!Number.isFinite(harga) || harga < 0) {
-        return res.status(400).json({
-          success: false,
-          message:
-            "harga_per_kg harus berupa angka valid",
-        });
-      }
-
       detailValidated.push({
         idJenis: jenisId,
         beratKg: berat,
-        hargaPerKG: harga,
       });
     }
 
-    // Cegah jenis sampah ganda
+    // =========================
+    // CEK DUPLIKAT JENIS SAMPAH
+    // =========================
     const jenisIds = detailValidated.map(
       (item) => item.idJenis
     );
@@ -303,10 +332,15 @@ export async function createTransaksiController(
       });
     }
 
+    // =========================
+    // BUAT REQUEST ID
+    // =========================
     const requestIdClean =
       `${device_id.trim()}-${lokalId}`;
 
-    // Kirim harga dari ESP32 ke service
+    // =========================
+    // SIMPAN TRANSAKSI
+    // =========================
     const result = await createTransaksi(
       nasabahId,
       requestIdClean,
@@ -339,16 +373,14 @@ export async function createTransaksiController(
       if (error.message === "DETAIL_KOSONG") {
         return res.status(400).json({
           success: false,
-          message:
-            "Detail transaksi tidak boleh kosong",
+          message: "Detail transaksi tidak boleh kosong",
         });
       }
 
       if (error.message === "JENIS_SAMPAH_NOT_FOUND") {
         return res.status(404).json({
           success: false,
-          message:
-            "Jenis sampah tidak ditemukan",
+          message: "Jenis sampah tidak ditemukan",
         });
       }
     }
