@@ -56,35 +56,48 @@ export async function getTransaksiById(id: number) {
   });
 }
 
+// Harga berasal dari ESP32
 export async function createTransaksi(
   idNasabah: number,
   requestId: string,
-  detail: { idJenis: number; beratKg: number }[]
+  detail: {
+    idJenis: number;
+    beratKg: number;
+    hargaPerKG: number;
+  }[]
 ) {
   try {
     return await prisma.$transaction(async (tx) => {
 
       // =====================================================
-      // 1. CEK REQUEST ID
+      // 1. CEK APAKAH TRANSAKSI SUDAH PERNAH DIPROSES
       // =====================================================
 
-      const transaksiExisting = await tx.transaksi.findUnique({
-        where: {
-          requestId,
-        },
-        include: {
-          nasabah: true,
-          detailTransaksi: {
-            include: {
-              jenisSampah: {
-                include: {
-                  kategoriSampah: true,
+      const transaksiExisting =
+        await tx.transaksi.findUnique({
+          where: {
+            requestId,
+          },
+          include: {
+            nasabah: {
+              select: {
+                idNasabah: true,
+                noKK: true,
+                nama: true,
+                saldo: true,
+              },
+            },
+            detailTransaksi: {
+              include: {
+                jenisSampah: {
+                  include: {
+                    kategoriSampah: true,
+                  },
                 },
               },
             },
           },
-        },
-      });
+        });
 
       if (transaksiExisting) {
         return {
@@ -116,38 +129,35 @@ export async function createTransaksi(
       }
 
       // =====================================================
-      // 4. CEK JENIS SAMPAH
+      // 4. CEK ID JENIS SAMPAH ADA DI DATABASE
+      // Harga TIDAK diambil dari database
       // =====================================================
 
-      const jenisIds = [...new Set(
-        detail.map((item) => item.idJenis)
-      )];
+      const jenisIds = [
+        ...new Set(
+          detail.map((item) => item.idJenis)
+        ),
+      ];
 
-      const jenisSampah = await tx.jenisSampah.findMany({
-        where: {
-          idJenis: {
-            in: jenisIds,
+      const jenisSampah =
+        await tx.jenisSampah.findMany({
+          where: {
+            idJenis: {
+              in: jenisIds,
+            },
           },
-        },
-      });
+        });
 
       const jenisDitemukan = new Set(
-        jenisSampah.map((item) => item.idJenis)
+        jenisSampah.map(
+          (item) => item.idJenis
+        )
       );
 
-      const jenisTidakDitemukan = jenisIds.filter(
-        (id) => !jenisDitemukan.has(id)
-      );
-
-      console.log("ID yang diminta ESP32:", jenisIds);
-      console.log(
-        "Jenis sampah ditemukan:",
-        jenisSampah.map((item) => ({
-          idJenis: item.idJenis,
-          nama: item.nama,
-          hargaPerKG: item.hargaPerKG,
-        }))
-      );
+      const jenisTidakDitemukan =
+        jenisIds.filter(
+          (id) => !jenisDitemukan.has(id)
+        );
 
       if (jenisTidakDitemukan.length > 0) {
         console.error(
@@ -155,128 +165,122 @@ export async function createTransaksi(
           jenisTidakDitemukan
         );
 
-        throw new Error("JENIS_SAMPAH_NOT_FOUND");
+        throw new Error(
+          "JENIS_SAMPAH_NOT_FOUND"
+        );
       }
 
       // =====================================================
-      // 5. HITUNG DETAIL TRANSAKSI
+      // 5. BUAT DETAIL TRANSAKSI
+      // HARGA LANGSUNG DARI ESP32
       // =====================================================
 
-      const detailData = detail.map((item) => {
-        const jenis = jenisSampah.find(
-          (data) => data.idJenis === item.idJenis
-        );
+      const detailData = detail.map(
+        (item) => {
+          const beratKg =
+            new Prisma.Decimal(
+              String(item.beratKg)
+            );
 
-        if (!jenis) {
-          throw new Error("JENIS_SAMPAH_NOT_FOUND");
+          // LANGSUNG PAKAI HARGA DARI ESP32
+          const hargaPerKG =
+            new Prisma.Decimal(
+              String(item.hargaPerKG)
+            );
+
+          const subTotal = beratKg
+            .mul(hargaPerKG)
+            .toDecimalPlaces(2);
+
+          return {
+            idJenis: item.idJenis,
+            beratKg,
+            hargaPerKG,
+            subTotal,
+          };
         }
-
-        // CEK HARGA SEBELUM DIKONVERSI KE DECIMAL
-        if (
-          jenis.hargaPerKG === null ||
-          jenis.hargaPerKG === undefined
-        ) {
-          console.error("HARGA JENIS SAMPAH KOSONG:", {
-            idJenis: jenis.idJenis,
-            nama: jenis.nama,
-            hargaPerKG: jenis.hargaPerKG,
-          });
-
-          throw new Error(
-            `HARGA_SAMPAH_KOSONG_${jenis.idJenis}`
-          );
-        }
-
-        const beratKg = new Prisma.Decimal(
-          String(item.beratKg)
-        );
-
-        const hargaPerKG = new Prisma.Decimal(
-          String(jenis.hargaPerKG)
-        );
-
-        const subTotal = beratKg
-          .mul(hargaPerKG)
-          .toDecimalPlaces(2);
-
-        return {
-          idJenis: item.idJenis,
-          beratKg,
-          hargaPerKG,
-          subTotal,
-        };
-      });
+      );
 
       // =====================================================
       // 6. HITUNG TOTAL BERAT
       // =====================================================
 
-      const totalBerat = detailData.reduce(
-        (total, item) => total.add(item.beratKg),
-        new Prisma.Decimal(0)
-      );
+      const totalBerat =
+        detailData.reduce(
+          (total, item) =>
+            total.add(item.beratKg),
+          new Prisma.Decimal(0)
+        );
 
       // =====================================================
       // 7. HITUNG TOTAL NILAI
       // =====================================================
 
-      const totalNilai = detailData.reduce(
-        (total, item) => total.add(item.subTotal),
-        new Prisma.Decimal(0)
-      );
+      const totalNilai =
+        detailData.reduce(
+          (total, item) =>
+            total.add(item.subTotal),
+          new Prisma.Decimal(0)
+        );
 
       // =====================================================
       // 8. SIMPAN TRANSAKSI
       // =====================================================
 
-      const transaksi = await tx.transaksi.create({
-        data: {
-          idNasabah,
-          requestId,
-          totalBerat,
-          totalNilai,
-          detailTransaksi: {
-            create: detailData,
-          },
-        },
-        include: {
-          nasabah: {
-            select: {
-              idNasabah: true,
-              noKK: true,
-              nama: true,
-              saldo: true,
+      const transaksi =
+        await tx.transaksi.create({
+          data: {
+            idNasabah,
+            requestId,
+            totalBerat,
+            totalNilai,
+
+            detailTransaksi: {
+              create: detailData,
             },
           },
-          detailTransaksi: {
-            include: {
-              jenisSampah: {
-                include: {
-                  kategoriSampah: true,
+
+          include: {
+            nasabah: {
+              select: {
+                idNasabah: true,
+                noKK: true,
+                nama: true,
+                saldo: true,
+              },
+            },
+
+            detailTransaksi: {
+              include: {
+                jenisSampah: {
+                  include: {
+                    kategoriSampah: true,
+                  },
                 },
               },
             },
           },
-        },
-      });
+        });
 
       // =====================================================
       // 9. UPDATE SALDO NASABAH
       // =====================================================
 
-      const nasabahTerbaru = await tx.nasabah.update({
-        where: {
-          idNasabah,
-        },
-        data: {
-          saldo: {
-            increment: totalNilai,
+      const nasabahTerbaru =
+        await tx.nasabah.update({
+          where: {
+            idNasabah,
           },
-        },
-      });
+
+          data: {
+            saldo: {
+              increment: totalNilai,
+            },
+          },
+        });
 
       // =====================================================
-      // 10. BUAT SYNC LOG
+      // 10. SIMPAN SYNC LOG
       // =====================================================
 
       await createSyncLogInternal(
@@ -304,11 +308,12 @@ export async function createTransaksi(
   } catch (error) {
 
     // =====================================================
-    // HANDLE DUPLIKASI REQUEST ID
+    // HANDLE RACE CONDITION / DUPLIKAT REQUEST ID
     // =====================================================
 
     if (
-      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error instanceof
+        Prisma.PrismaClientKnownRequestError &&
       error.code === "P2002"
     ) {
       const transaksiExisting =
@@ -317,7 +322,15 @@ export async function createTransaksi(
             requestId,
           },
           include: {
-            nasabah: true,
+            nasabah: {
+              select: {
+                idNasabah: true,
+                noKK: true,
+                nama: true,
+                saldo: true,
+              },
+            },
+
             detailTransaksi: {
               include: {
                 jenisSampah: {
