@@ -6,7 +6,7 @@
     "scripts": {
     "dev": "tsx watch src/server.ts",
     "start": "tsx src/server.ts",
-    "build": "prisma generate && tsc",
+    "build": "prisma generate",
     "typecheck": "tsc --noEmit",
     "generate": "prisma generate",
     "postinstall": "prisma generate"
