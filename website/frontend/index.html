@@ -3,7 +3,7 @@
     <head>
     <meta charset="UTF-8" />
 
-    <!-- tampilan responsive di HP -->
+    <!-- Tampilan responsive di HP -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Laporan Timbangan - KINASIH</title>
@@ -16,13 +16,18 @@
     rel="stylesheet"
     />
 
+    <!-- Bootstrap Icons (Pengganti Emoji) -->
+    <link 
+    rel="stylesheet" 
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+
     <!-- CSS -->
     <link rel="stylesheet" href="css/style.css" />
     </head>
 
     <body>
     <!-- HEADER -->
-
     <header class="header">
     <div class="container">
         <!-- Logo dan nama aplikasi -->
@@ -37,8 +42,23 @@
     </div>
     </header>
 
-    <!-- KONTEN UTAMA -->
+    <!-- NOTIFIKASI TOAST PERMINTAAN PENARIKAN (UNTUK KASIR / PAK BABAN) -->
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1100;">
+        <div id="toastPenarikan" class="toast align-items-center text-bg-warning border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex p-2">
+                <div class="toast-body fw-bold text-dark">
+                    <i class="bi bi-bell-fill me-2 fs-5 text-danger"></i>
+                    <span id="toastNotifMsg">Mau tarik saldo? Ada permintaan penarikan baru.</span>
+                </div>
+                <button type="button" class="btn btn-sm btn-dark me-2 my-auto" id="btnBukaModalTarik">
+                    Proses <i class="bi bi-arrow-right-circle ms-1"></i>
+                </button>
+                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Tutup"></button>
+            </div>
+        </div>
+    </div>
 
+    <!-- KONTEN UTAMA -->
     <main class="main-content">
     <div class="container">
 
@@ -47,7 +67,7 @@
 
         <!-- Judul -->
         <div class="text-center mb-4">
-            <h2>Laporan Timbangan</h2>
+            <h2><i class="bi bi-file-earmark-spreadsheet text-success me-2"></i>Laporan Timbangan</h2>
             <p class="description">Pilih periode untuk mengunduh laporan.</p>
         </div>
 
@@ -65,7 +85,9 @@
             class="form-control date-input"
             />
 
-            <div id="errorMulai" class="error-message">⚠ Wajib diisi</div>
+            <div id="errorMulai" class="error-message">
+                <i class="bi bi-exclamation-circle me-1"></i> Wajib diisi
+            </div>
         </div>
 
         <!-- Tanggal akhir -->
@@ -80,17 +102,19 @@
             class="form-control date-input"
             />
 
-            <div id="errorAkhir" class="error-message">⚠ Wajib diisi</div>
+            <div id="errorAkhir" class="error-message">
+                <i class="bi bi-exclamation-circle me-1"></i> Wajib diisi
+            </div>
         </div>
 
         <div id="errorTanggal" class="error-message">
-            ⚠ Tanggal mulai tidak boleh setelah tanggal akhir.
+            <i class="bi bi-exclamation-triangle me-1"></i> Tanggal mulai tidak boleh setelah tanggal akhir.
         </div>
 
         <!-- TOMBOL EXPORT -->
 
         <button type="button" id="btnExport" class="btn btn-export w-100">
-            Export Laporan
+            <i class="bi bi-download me-2"></i> Export Laporan
         </button>
 
         <!-- STATUS -->
@@ -104,7 +128,7 @@
 
         <!-- Judul -->
         <div class="text-center mb-4">
-            <h2>Cek Saldo Warga</h2>
+            <h2><i class="bi bi-wallet2 text-success me-2"></i>Cek Saldo Warga</h2>
             <p class="description">
                 Masukkan nomor KK untuk melihat saldo.
             </p>
@@ -126,14 +150,14 @@
             />
 
             <div id="errorKK" class="error-message">
-            ⚠ Wajib diisi
+                <i class="bi bi-exclamation-circle me-1"></i> Wajib diisi
             </div>
         </div>
 
         <!-- TOMBOL CEK SALDO -->
 
         <button type="button" id="btnCekSaldo" class="btn btn-export w-100">
-            Cek Saldo
+            <i class="bi bi-search me-2"></i> Cek Saldo
         </button>
 
         <!-- HASIL SALDO -->
@@ -149,11 +173,87 @@
     <!-- TOMBOL BANTUAN MELAYANG (POJOK KANAN BAWAH) -->
     <!-- ========================================== -->
     <button type="button" class="btn-floating-bantuan" data-bs-toggle="modal" data-bs-target="#modalBantuan">
-        Bantuan Timbangan <span>❓</span>
+        <i class="bi bi-question-circle-fill me-1"></i> Bantuan Timbangan
     </button>
 
-          <!-- ================================================================= -->
-    <!-- MODUL PANDUAN TEKNIS OPERASIONAL TIMBANGAN DIGITAL SMARTSCALE     -->
+    <!-- ======================================================== -->
+    <!-- MODAL POP-UP: PROSES PENARIKAN SALDO KASIR (PAK BABAN)    -->
+    <!-- ======================================================== -->
+    <div class="modal fade" id="modalProsesPenarikan" tabindex="-1" aria-labelledby="modalProsesPenarikanLabel" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 16px; overflow: hidden;">
+                <div class="modal-header text-white py-3" style="background-color: #1D553E;">
+                    <h5 class="modal-title fs-6 fw-bold" id="modalProsesPenarikanLabel">
+                        <i class="bi bi-cash-coin me-2"></i>Persetujuan Penarikan Saldo
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <!-- Detail Nasabah dari ESP32 -->
+                    <div class="p-3 mb-3 rounded bg-light border">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="text-muted small">Nama Nasabah:</span>
+                            <span class="fw-bold text-dark" id="tarikNamaNasabah">-</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="text-muted small">Nomor KK:</span>
+                            <span class="font-monospace small" id="tarikNoKK">-</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-muted small">Total Saldo:</span>
+                            <span class="fw-bold text-success fs-5" id="tarikSaldoTersedia">Rp 0</span>
+                        </div>
+                    </div>
+
+                    <!-- Countdown Timer 60 Detik -->
+                    <div class="alert alert-warning py-2 px-3 small d-flex justify-content-between align-items-center mb-3">
+                        <span><i class="bi bi-stopwatch me-1"></i> Masa Berlaku Token:</span>
+                        <span class="badge bg-danger fs-6" id="countdownToken">60s</span>
+                    </div>
+
+                    <!-- Form Input Token & Nominal -->
+                    <form id="formPenarikan">
+                        <div class="mb-3">
+                            <label for="inputTokenPenarikan" class="form-label small fw-bold">
+                                Token 6-Digit (Lihat di Layar Timbangan) <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" id="inputTokenPenarikan" class="form-control text-center fs-4 fw-bold font-monospace" placeholder="482193" maxlength="6" inputmode="numeric" required />
+                            <div class="form-text text-muted small">Ketik 6 digit token yang tampil di layar timbangan.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="inputJumlahPenarikan" class="form-label small fw-bold">
+                                Nominal Penarikan (Rp) <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text">Rp</span>
+                                <input type="number" id="inputJumlahPenarikan" class="form-control fw-bold" placeholder="50000" min="1000" step="1000" required />
+                            </div>
+                            <div class="d-flex gap-2 mt-2">
+                                <button type="button" class="btn btn-outline-secondary btn-sm" id="btnQuick50">50rb</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" id="btnQuick100">100rb</button>
+                                <button type="button" class="btn btn-outline-success btn-sm fw-bold" id="btnTarikSemua">Tarik Semua</button>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="inputKeteranganPenarikan" class="form-label small fw-bold">Keterangan</label>
+                            <input type="text" id="inputKeteranganPenarikan" class="form-control" value="Penarikan tunai" />
+                        </div>
+
+                        <div id="errorTarik" class="alert alert-danger py-2 small" style="display: none;"></div>
+
+                        <button type="submit" class="btn btn-success w-100 py-2 fw-bold" id="btnSubmitTarik" style="background-color: #1D553E; border-color: #1D553E;">
+                            <i class="bi bi-check2-circle me-1"></i> Setujui & Cairkan Saldo
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- MODAL PANDUAN TEKNIS OPERASIONAL TIMBANGAN DIGITAL SMARTSCALE     -->
     <!-- ================================================================= -->
     <div class="modal fade" id="modalBantuan" tabindex="-1" aria-labelledby="modalBantuanLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
@@ -163,7 +263,7 @@
                 <div class="modal-header py-3" style="background-color: #1D553E; color: white;">
                     <div>
                         <h5 class="modal-title fw-bold mb-0 fs-6" id="modalBantuanLabel">
-                            Petunjuk Operasional Timbangan Digital "SmartScale Kinasih"
+                            <i class="bi bi-journal-text me-2"></i>Petunjuk Operasional Timbangan Digital "SmartScale Kinasih"
                         </h5>
                         <small style="opacity: 0.85; font-size: 0.78rem;">Dokumen Teknis Pengoperasian untuk Petugas & Pengurus Pos</small>
                     </div>
@@ -181,7 +281,7 @@
                             <div class="text-muted" style="font-size: 0.76rem;">Format cetak resmi untuk arsip pos penimbangan.</div>
                         </div>
                         <a href="assets/panduan/buku-panduan-kinasih.pdf" download class="btn btn-sm btn-success fw-semibold text-nowrap ms-2" style="background-color: #1D553E; border-color: #1D553E;">
-                            Unduh PDF
+                            <i class="bi bi-file-earmark-arrow-down-fill me-1"></i> Unduh PDF
                         </a>
                     </div>
 
@@ -444,7 +544,7 @@
                             </div>
                         </div>
 
-                        <!-- BAB 6 -->
+                        <!-- BAB 6: DATA NASABAH & PENARIKAN SALDO -->
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingEnam">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEnam">
@@ -472,7 +572,7 @@
                                         <small>[Foto: Halaman Daftar Nasabah]</small>
                                     </div>
 
-                                    <h6 class="fw-bold mt-3" style="color: #1D553E;">B. Parameter Detail Nasabah & Token Verifikasi:</h6>
+                                    <h6 class="fw-bold mt-3" style="color: #1D553E;">B. Parameter Detail Nasabah & Token Verifikasi Penarikan Saldo:</h6>
                                     <p class="mb-2">Parameter yang ditampilkan mencakup:</p>
                                     <ul class="ps-3 mb-2">
                                         <li>Nomor KK Nasabah</li>
@@ -483,6 +583,16 @@
                                     <div class="panduan-img-box">
                                         <img src="assets/Menu 3 - Data Nasabah/halaman-detail-nasabah.jpg" onerror="this.src='https://placehold.co/600x260/1D553E/white?text=Foto+Detail+Nasabah'" alt="Detail Nasabah">
                                         <small>[Foto: Halaman Detail Nasabah & Token]</small>
+                                    </div>
+
+                                    <!-- KOTAK ALUR PENARIKAN SALDO DARI KETUA -->
+                                    <div class="p-3 my-3 rounded bg-light border-start border-success border-4">
+                                        <h6 class="fw-bold text-success mb-2">
+                                            <i class="bi bi-cash-stack me-2"></i>Alur Penarikan Saldo Warga di Pos:
+                                        </h6>
+                                        <p class="mb-0 small" style="line-height: 1.6;">
+                                            Pak Baban masuk ke data nasabah, terus klik salah satu nasabah dan akan masuk ke detail nasabah di situ ada nomor tokennya 6 digit, dan otomatis ESP32 mengirim data nasabah beserta token ke backend. Backend menyimpan sesi dan frontend menerima notifikasi <em>"Mau tarik saldo?"</em>. Jika diklik, maka langsung terbuka data nasabah yang dikirim ESP dan ada inputan untuk memasukkan token yang ada di layar timbangan serta nominal penarikan.
+                                        </p>
                                     </div>
 
                                     <div class="alert alert-danger py-2 px-3 small border-0 my-2">
@@ -779,10 +889,10 @@
 
                 </div>
 
-                <!-- FOOTER MODUL -->
+                <!-- FOOTER MODAL -->
                 <div class="modal-footer bg-white border-top d-flex justify-content-between p-3">
                     <a href="assets/panduan/buku-panduan-kinasih.pdf" download class="btn btn-outline-success btn-sm py-2 px-3 fw-semibold" style="border-radius: 6px; color: #1D553E; border-color: #1D553E;">
-                        Unduh File PDF
+                        <i class="bi bi-file-earmark-arrow-down-fill me-1"></i> Unduh File PDF
                     </a>
                     <button type="button" class="btn btn-secondary btn-sm py-2 px-3" data-bs-dismiss="modal" style="border-radius: 6px;">
                         Tutup
@@ -794,7 +904,6 @@
     </div>
         
     <!-- FOOTER -->
-
     <footer class="footer">
     <p>© 2026 KINASIH</p>
     <p>Dikembangkan oleh Eclipse</p>

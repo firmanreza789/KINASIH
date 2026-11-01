@@ -230,6 +230,7 @@ body {
 
     /* Menghilangkan border */
     border: none;
+    transition: all 0.2s ease-in-out;
 }
 
 
@@ -397,7 +398,7 @@ body {
     background-color: var(--primary);
 }
 
-/* Ikon panah panah accordion saat terbuka menjadi putih */
+/* Ikon panah accordion saat terbuka menjadi putih */
 .accordion-panduan .accordion-button:not(.collapsed)::after {
     filter: brightness(0) invert(1);
 }
@@ -449,6 +450,50 @@ body {
 }
 
 
+/* ========================================== */
+/* STYLING FITUR PENARIKAN SALDO KASIR       */
+/* ========================================== */
+
+/* Notifikasi Toast Penarikan */
+#toastPenarikan {
+    border-radius: 12px;
+    background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%);
+    box-shadow: 0 8px 25px rgba(255, 179, 0, 0.4);
+    animation: toastBounce 0.5s ease-in-out;
+}
+
+@keyframes toastBounce {
+    0% { transform: translateY(-20px); opacity: 0; }
+    70% { transform: translateY(4px); }
+    100% { transform: translateY(0); opacity: 1; }
+}
+
+/* Input Token 6 Digit (Font Monospace & Spasi Renggang ala OTP) */
+#inputTokenPenarikan {
+    font-family: 'Courier New', Courier, monospace;
+    letter-spacing: 8px;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--primary);
+    background-color: #f0f7f3;
+    border: 2px dashed #9bc4ad;
+}
+
+#inputTokenPenarikan:focus {
+    background-color: #ffffff;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(29, 85, 62, 0.2);
+}
+
+/* Countdown Badge */
+#countdownToken {
+    min-width: 45px;
+    text-align: center;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+
 /* RESPONSIVE UNTUK HP */
 
 @media (max-width: 576px) {
@@ -495,5 +540,10 @@ body {
     .accordion-panduan .accordion-body {
         font-size: 0.85rem;
         padding: 12px;
+    }
+
+    #inputTokenPenarikan {
+        letter-spacing: 5px;
+        font-size: 1.5rem;
     }
 }
