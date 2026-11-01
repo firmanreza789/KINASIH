@@ -3,7 +3,7 @@ import { prisma } from "../lib/prisma";
 import { createSyncLogInternal } from "./sync-log.service";
 
 export async function getAllPenarikan() {
-  return prisma.penarikan.findMany({
+  return prisma.penarikanSaldo.findMany({
     orderBy: {
       tanggal: "desc",
     },
