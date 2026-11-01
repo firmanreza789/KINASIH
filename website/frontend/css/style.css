@@ -430,11 +430,14 @@ body {
 }
 
 .panduan-img-box img {
-    max-height: 220px;
-    width: 100%;
-    object-fit: cover;
+    max-width: 100%;
+    height: auto; /* Mengikuti tinggi asli foto agar tidak terpotong */
+    max-height: 420px; /* Batas tinggi maksimal di layar PC */
+    object-fit: contain; /* Menampilkan seluruh isi foto tanpa di-crop */
     border-radius: 8px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    display: block;
+    margin: 0 auto; /* Supaya foto berada tepat di tengah */
 }
 
 .panduan-img-box small {
