@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {
+    "scripts": {
     "dev": "tsx watch src/server.ts",
     "start": "tsx src/server.ts",
+    "build": "prisma generate && tsc",
     "typecheck": "tsc --noEmit",
     "generate": "prisma generate",
     "postinstall": "prisma generate"

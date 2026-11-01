@@ -1,10 +1,17 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+enum StatusPenarikanSession {
+  WAITING
+  EXPIRED
+  APPROVED
+
+  @@map("status_penarikan_session")
 }
 
 model KategoriSampah {
@@ -37,6 +44,9 @@ model Nasabah {
 
   transaksi Transaksi[]
   penarikan Penarikan[]
+
+  penarikanSessions PenarikanSession[]
+  penarikanSaldo    PenarikanSaldo[]
 
   @@index([noKK])
   @@map("nasabah")
@@ -101,4 +111,40 @@ model SyncLog {
   @@index([tipeData, idData])
   @@index([waktu])
   @@map("sync_log")
+}
+
+model PenarikanSession {
+  idSession Int                    @id @default(autoincrement())
+  deviceId  String                 @map("device_id")
+  idNasabah Int                    @map("id_nasabah")
+  token     String
+  status    StatusPenarikanSession @default(WAITING)
+  expiresAt DateTime               @map("expires_at")
+  createdAt DateTime               @default(now()) @map("created_at")
+
+  nasabah        Nasabah          @relation(fields: [idNasabah], references: [idNasabah], onDelete: Restrict, onUpdate: Cascade)
+  penarikanSaldo PenarikanSaldo?
+
+  @@index([deviceId, idNasabah])
+  @@index([status, expiresAt])
+  @@map("penarikan_sessions")
+}
+
+model PenarikanSaldo {
+  idPenarikan     Int      @id @default(autoincrement()) @map("id_penarikan")
+  idNasabah       Int      @map("id_nasabah")
+  deviceId        String   @map("device_id")
+  jumlahPenarikan Decimal  @db.Decimal(14, 2) @map("jumlah_penarikan")
+  saldoSebelum    Decimal  @db.Decimal(14, 2) @map("saldo_sebelum")
+  saldoSesudah    Decimal  @db.Decimal(14, 2) @map("saldo_sesudah")
+  keterangan      String?
+  tanggal         DateTime @default(now()) @map("tanggal_transaksi")
+
+  nasabah   Nasabah          @relation(fields: [idNasabah], references: [idNasabah], onDelete: Restrict, onUpdate: Cascade)
+  idSession Int              @unique @map("id_session")
+  session   PenarikanSession @relation(fields: [idSession], references: [idSession], onDelete: Restrict, onUpdate: Cascade)
+
+  @@index([idNasabah])
+  @@index([tanggal])
+  @@map("penarikan_saldo")
 }
