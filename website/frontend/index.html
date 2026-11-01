@@ -42,36 +42,17 @@
     </div>
     </header>
 
-    <!-- NOTIFIKASI TOAST PERMINTAAN PENARIKAN (UNTUK KASIR / PAK BABAN) -->
-    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1100;">
-        <div id="toastPenarikan" class="toast align-items-center text-bg-warning border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="d-flex p-2">
-                <div class="toast-body fw-bold text-dark">
-                    <i class="bi bi-bell-fill me-2 fs-5 text-danger"></i>
-                    <span id="toastNotifMsg">Mau tarik saldo? Ada permintaan penarikan baru.</span>
-                </div>
-                <button type="button" class="btn btn-sm btn-dark me-2 my-auto" id="btnBukaModalTarik">
-                    Proses <i class="bi bi-arrow-right-circle ms-1"></i>
-                </button>
-                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Tutup"></button>
-            </div>
-        </div>
-    </div>
-
     <!-- KONTEN UTAMA -->
     <main class="main-content">
     <div class="container">
 
-        <!-- Card laporan -->
+        <!-- CARD 1: LAPORAN TIMBANGAN -->
         <div class="report-card">
 
-        <!-- Judul -->
         <div class="text-center mb-4">
             <h2><i class="bi bi-file-earmark-spreadsheet text-success me-2"></i>Laporan Timbangan</h2>
             <p class="description">Pilih periode untuk mengunduh laporan.</p>
         </div>
-
-        <!-- FORM PERIODE -->
 
         <!-- Tanggal mulai -->
         <div class="mb-3">
@@ -112,21 +93,18 @@
         </div>
 
         <!-- TOMBOL EXPORT -->
-
         <button type="button" id="btnExport" class="btn btn-export w-100">
             <i class="bi bi-download me-2"></i> Export Laporan
         </button>
 
-        <!-- STATUS -->
+        <!-- STATUS EXPORT -->
         <div id="status" class="status-message" aria-live="polite"></div>
         </div>
 
 
-        <!-- Card cek saldo -->
-
+        <!-- CARD 2: CEK SALDO WARGA -->
         <div class="report-card balance-card">
 
-        <!-- Judul -->
         <div class="text-center mb-4">
             <h2><i class="bi bi-wallet2 text-success me-2"></i>Cek Saldo Warga</h2>
             <p class="description">
@@ -150,19 +128,92 @@
             />
 
             <div id="errorKK" class="error-message">
-                <i class="bi bi-exclamation-circle me-1"></i> Wajib diisi
+                <i class="bi bi-exclamation-circle me-1"></i> Wajib diisi (16 digit)
             </div>
         </div>
 
         <!-- TOMBOL CEK SALDO -->
-
         <button type="button" id="btnCekSaldo" class="btn btn-export w-100">
             <i class="bi bi-search me-2"></i> Cek Saldo
         </button>
 
         <!-- HASIL SALDO -->
-
         <div id="saldoResult" class="saldo-result"></div>
+
+        </div>
+
+
+        <!-- CARD 3: PENARIKAN SALDO (KASIR / PAK BABAN) -->
+        <div class="report-card balance-card">
+
+        <div class="text-center mb-4">
+            <h2><i class="bi bi-cash-stack text-success me-2"></i>Penarikan Saldo</h2>
+            <p class="description">
+                Masukkan nomor KK, token dari timbangan, dan nominal penarikan.
+            </p>
+        </div>
+
+        <!-- Nomor KK Nasabah -->
+        <div class="mb-3">
+            <label for="tarikNoKK" class="form-label">
+                Nomor KK <span class="required">*</span>
+            </label>
+            <input
+                type="text"
+                id="tarikNoKK"
+                class="form-control date-input"
+                inputmode="numeric"
+                placeholder="Masukkan 16 digit nomor KK"
+                maxlength="16"
+            />
+            <div id="errorTarikKK" class="error-message">
+                <i class="bi bi-exclamation-circle me-1"></i> Wajib diisi (16 digit nomor KK)
+            </div>
+        </div>
+
+        <!-- Token 6 Digit dari Layar Timbangan -->
+        <div class="mb-3">
+            <label for="tarikToken" class="form-label">
+                Token Timbangan (6 Digit) <span class="required">*</span>
+            </label>
+            <input
+                type="text"
+                id="tarikToken"
+                class="form-control date-input text-center fw-bold font-monospace"
+                inputmode="numeric"
+                placeholder="Contoh: 482193"
+                maxlength="6"
+            />
+            <div id="errorTarikToken" class="error-message">
+                <i class="bi bi-exclamation-circle me-1"></i> Wajib diisi 6 digit angka token
+            </div>
+        </div>
+
+        <!-- Nominal Penarikan -->
+        <div class="mb-4">
+            <label for="tarikNominal" class="form-label">
+                Nominal Penarikan (Rp) <span class="required">*</span>
+            </label>
+            <input
+                type="number"
+                id="tarikNominal"
+                class="form-control date-input fw-bold"
+                placeholder="Contoh: 50000"
+                min="1000"
+                step="1000"
+            />
+            <div id="errorTarikNominal" class="error-message">
+                <i class="bi bi-exclamation-circle me-1"></i> Masukkan nominal penarikan yang valid
+            </div>
+        </div>
+
+        <!-- TOMBOL TARIK SALDO -->
+        <button type="button" id="btnTarikSaldo" class="btn btn-export w-100">
+            <i class="bi bi-cash-coin me-2"></i> Tarik Saldo
+        </button>
+
+        <!-- HASIL PENARIKAN -->
+        <div id="tarikResult" class="saldo-result"></div>
 
         </div>
 
@@ -175,82 +226,6 @@
     <button type="button" class="btn-floating-bantuan" data-bs-toggle="modal" data-bs-target="#modalBantuan">
         <i class="bi bi-question-circle-fill me-1"></i> Bantuan Timbangan
     </button>
-
-    <!-- ======================================================== -->
-    <!-- MODAL POP-UP: PROSES PENARIKAN SALDO KASIR (PAK BABAN)    -->
-    <!-- ======================================================== -->
-    <div class="modal fade" id="modalProsesPenarikan" tabindex="-1" aria-labelledby="modalProsesPenarikanLabel" aria-hidden="true" data-bs-backdrop="static">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg" style="border-radius: 16px; overflow: hidden;">
-                <div class="modal-header text-white py-3" style="background-color: #1D553E;">
-                    <h5 class="modal-title fs-6 fw-bold" id="modalProsesPenarikanLabel">
-                        <i class="bi bi-cash-coin me-2"></i>Persetujuan Penarikan Saldo
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Tutup"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <!-- Detail Nasabah dari ESP32 -->
-                    <div class="p-3 mb-3 rounded bg-light border">
-                        <div class="d-flex justify-content-between align-items-center mb-1">
-                            <span class="text-muted small">Nama Nasabah:</span>
-                            <span class="fw-bold text-dark" id="tarikNamaNasabah">-</span>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center mb-1">
-                            <span class="text-muted small">Nomor KK:</span>
-                            <span class="font-monospace small" id="tarikNoKK">-</span>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="text-muted small">Total Saldo:</span>
-                            <span class="fw-bold text-success fs-5" id="tarikSaldoTersedia">Rp 0</span>
-                        </div>
-                    </div>
-
-                    <!-- Countdown Timer 60 Detik -->
-                    <div class="alert alert-warning py-2 px-3 small d-flex justify-content-between align-items-center mb-3">
-                        <span><i class="bi bi-stopwatch me-1"></i> Masa Berlaku Token:</span>
-                        <span class="badge bg-danger fs-6" id="countdownToken">60s</span>
-                    </div>
-
-                    <!-- Form Input Token & Nominal -->
-                    <form id="formPenarikan">
-                        <div class="mb-3">
-                            <label for="inputTokenPenarikan" class="form-label small fw-bold">
-                                Token 6-Digit (Lihat di Layar Timbangan) <span class="text-danger">*</span>
-                            </label>
-                            <input type="text" id="inputTokenPenarikan" class="form-control text-center fs-4 fw-bold font-monospace" placeholder="482193" maxlength="6" inputmode="numeric" required />
-                            <div class="form-text text-muted small">Ketik 6 digit token yang tampil di layar timbangan.</div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="inputJumlahPenarikan" class="form-label small fw-bold">
-                                Nominal Penarikan (Rp) <span class="text-danger">*</span>
-                            </label>
-                            <div class="input-group">
-                                <span class="input-group-text">Rp</span>
-                                <input type="number" id="inputJumlahPenarikan" class="form-control fw-bold" placeholder="50000" min="1000" step="1000" required />
-                            </div>
-                            <div class="d-flex gap-2 mt-2">
-                                <button type="button" class="btn btn-outline-secondary btn-sm" id="btnQuick50">50rb</button>
-                                <button type="button" class="btn btn-outline-secondary btn-sm" id="btnQuick100">100rb</button>
-                                <button type="button" class="btn btn-outline-success btn-sm fw-bold" id="btnTarikSemua">Tarik Semua</button>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="inputKeteranganPenarikan" class="form-label small fw-bold">Keterangan</label>
-                            <input type="text" id="inputKeteranganPenarikan" class="form-control" value="Penarikan tunai" />
-                        </div>
-
-                        <div id="errorTarik" class="alert alert-danger py-2 small" style="display: none;"></div>
-
-                        <button type="submit" class="btn btn-success w-100 py-2 fw-bold" id="btnSubmitTarik" style="background-color: #1D553E; border-color: #1D553E;">
-                            <i class="bi bi-check2-circle me-1"></i> Setujui & Cairkan Saldo
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- ================================================================= -->
     <!-- MODAL PANDUAN TEKNIS OPERASIONAL TIMBANGAN DIGITAL SMARTSCALE     -->

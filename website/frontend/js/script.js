@@ -19,6 +19,16 @@ const btnCekSaldo = document.getElementById("btnCekSaldo");
 const errorKK = document.getElementById("errorKK");
 const saldoResult = document.getElementById("saldoResult");
 
+// Elemen Penarikan Saldo (Card Utama)
+const tarikNoKK = document.getElementById("tarikNoKK");
+const tarikToken = document.getElementById("tarikToken");
+const tarikNominal = document.getElementById("tarikNominal");
+const btnTarikSaldo = document.getElementById("btnTarikSaldo");
+const errorTarikKK = document.getElementById("errorTarikKK");
+const errorTarikToken = document.getElementById("errorTarikToken");
+const errorTarikNominal = document.getElementById("errorTarikNominal");
+const tarikResult = document.getElementById("tarikResult");
+
 // Helper Format Mata Uang Rupiah (Contoh: Rp 150.000)
 const formatRupiah = (angka) => {
     return new Intl.NumberFormat("id-ID", {
@@ -207,7 +217,7 @@ btnCekSaldo.addEventListener("click", async function () {
                 <div style="font-size: 1.15rem; font-weight: bold; color: #222;">${nasabah.nama}</div>
                 <hr style="margin: 8px 0;">
                 <div style="font-size: 0.9rem; color: #666;">Total Saldo Tabungan:</div>
-                <div style="font-size: 1.35rem; font-weight: bold; color: #2e7d32;">
+                <div style="font-size: 1.35rem; font-weight: bold; color: #1D553E;">
                     ${formatRupiah(nasabah.saldo)}
                 </div>
             `;
@@ -223,172 +233,137 @@ btnCekSaldo.addEventListener("click", async function () {
 
 
 // ====================================================================
-// 3. FITUR PENARIKAN SALDO KASIR VIA TOKEN (PAK BABAN)
+// 3. FITUR PENARIKAN SALDO KASIR (CARD UTAMA)
 // ====================================================================
-let activeSession = null;
-let countdownInterval = null;
+if (btnTarikSaldo) {
+    btnTarikSaldo.addEventListener("click", async function () {
+        const noKKVal = (tarikNoKK ? tarikNoKK.value : "").trim();
+        const tokenVal = (tarikToken ? tarikToken.value : "").trim();
+        const nominalVal = Number(tarikNominal ? tarikNominal.value : 0);
+        let valid = true;
 
-// Elemen Toast & Modal Penarikan
-const toastEl = document.getElementById("toastPenarikan");
-const modalProsesEl = document.getElementById("modalProsesPenarikan");
-const toastBootstrap = toastEl ? bootstrap.Toast.getOrCreateInstance(toastEl) : null;
-const modalProses = modalProsesEl ? new bootstrap.Modal(modalProsesEl) : null;
-
-// A. Polling Cek Permintaan Penarikan dari ESP32 (Tiap 3 Detik)
-async function pollPendingWithdrawal() {
-    try {
-        const res = await fetch(`${API_URL}/api/penarikan/active-session`);
-        const json = await res.json();
-
-        if (json.success && json.data && json.data.status === "WAITING") {
-            // Jika ada permintaan penarikan baru yang belum diproses
-            if (!activeSession || activeSession.id_nasabah !== json.data.id_nasabah) {
-                activeSession = json.data;
-                const toastMsg = document.getElementById("toastNotifMsg");
-                if (toastMsg) {
-                    toastMsg.textContent = `Mau tarik saldo? ${activeSession.nama} meminta penarikan.`;
-                }
-                if (toastBootstrap) {
-                    toastBootstrap.show();
-                }
-            }
+        // 1. Validasi Nomor KK (16 digit angka)
+        if (!noKKVal) {
+            errorTarikKK.innerHTML = `<i class="bi bi-exclamation-circle me-1"></i> Wajib diisi`;
+            errorTarikKK.style.display = "block";
+            tarikNoKK.classList.add("input-error");
+            valid = false;
+        } else if (!/^\d{16}$/.test(noKKVal)) {
+            errorTarikKK.innerHTML = `<i class="bi bi-exclamation-circle me-1"></i> Nomor KK harus 16 digit angka`;
+            errorTarikKK.style.display = "block";
+            tarikNoKK.classList.add("input-error");
+            valid = false;
         } else {
-            activeSession = null;
-        }
-    } catch (err) {
-        // Abaikan error saat backend belum selesai dideploy
-    }
-}
-setInterval(pollPendingWithdrawal, 3000);
-
-// B. Buka Modal Saat Tombol "Proses" di Toast Diklik
-const btnBukaModalTarik = document.getElementById("btnBukaModalTarik");
-if (btnBukaModalTarik) {
-    btnBukaModalTarik.addEventListener("click", () => {
-        if (!activeSession) return;
-
-        document.getElementById("tarikNamaNasabah").textContent = activeSession.nama;
-        document.getElementById("tarikNoKK").textContent = activeSession.no_kk;
-        document.getElementById("tarikSaldoTersedia").textContent = formatRupiah(activeSession.saldo);
-        document.getElementById("inputJumlahPenarikan").max = activeSession.saldo;
-        document.getElementById("inputJumlahPenarikan").value = "";
-        document.getElementById("inputTokenPenarikan").value = "";
-        document.getElementById("errorTarik").style.display = "none";
-        document.getElementById("btnSubmitTarik").disabled = false;
-
-        // Mulai Timer 60 Detik
-        startCountdown(activeSession.expires_in || 60);
-
-        if (toastBootstrap) toastBootstrap.hide();
-        if (modalProses) modalProses.show();
-    });
-}
-
-// C. Timer Hitung Mundur Token (60 Detik)
-function startCountdown(seconds) {
-    clearInterval(countdownInterval);
-    let sisa = seconds;
-    const badge = document.getElementById("countdownToken");
-
-    countdownInterval = setInterval(() => {
-        sisa--;
-        if (badge) badge.textContent = `${sisa}s`;
-
-        if (sisa <= 0) {
-            clearInterval(countdownInterval);
-            if (badge) badge.textContent = "EXPIRED";
-            const errEl = document.getElementById("errorTarik");
-            if (errEl) {
-                errEl.innerHTML = `<i class="bi bi-clock-history me-1"></i> Sesi penarikan telah kedaluwarsa. Silakan ulangi pemilihan nasabah di layar timbangan.`;
-                errEl.style.display = "block";
-            }
-            const submitBtn = document.getElementById("btnSubmitTarik");
-            if (submitBtn) submitBtn.disabled = true;
-        }
-    }, 1000);
-}
-
-// D. Tombol Pintas Nominal
-const btnQuick50 = document.getElementById("btnQuick50");
-const btnQuick100 = document.getElementById("btnQuick100");
-const btnTarikSemua = document.getElementById("btnTarikSemua");
-
-if (btnQuick50) {
-    btnQuick50.addEventListener("click", () => {
-        document.getElementById("inputJumlahPenarikan").value = 50000;
-    });
-}
-if (btnQuick100) {
-    btnQuick100.addEventListener("click", () => {
-        document.getElementById("inputJumlahPenarikan").value = 100000;
-    });
-}
-if (btnTarikSemua) {
-    btnTarikSemua.addEventListener("click", () => {
-        if (activeSession) {
-            document.getElementById("inputJumlahPenarikan").value = activeSession.saldo;
-        }
-    });
-}
-
-// E. Proses Submit Persetujuan Penarikan
-const formPenarikan = document.getElementById("formPenarikan");
-if (formPenarikan) {
-    formPenarikan.addEventListener("submit", async function (e) {
-        e.preventDefault();
-        const token = document.getElementById("inputTokenPenarikan").value.trim();
-        const jumlah = Number(document.getElementById("inputJumlahPenarikan").value);
-        const keterangan = document.getElementById("inputKeteranganPenarikan").value.trim();
-        const errorEl = document.getElementById("errorTarik");
-        const submitBtn = document.getElementById("btnSubmitTarik");
-
-        if (token.length !== 6) {
-            errorEl.innerHTML = `<i class="bi bi-exclamation-circle me-1"></i> Token harus terdiri dari 6 digit angka.`;
-            errorEl.style.display = "block";
-            return;
+            errorTarikKK.style.display = "none";
+            tarikNoKK.classList.remove("input-error");
         }
 
-        if (jumlah <= 0 || jumlah > Number(activeSession.saldo)) {
-            errorEl.innerHTML = `<i class="bi bi-exclamation-triangle me-1"></i> Nominal tidak valid atau melebihi saldo nasabah.`;
-            errorEl.style.display = "block";
-            return;
+        // 2. Validasi Token (6 digit angka dari timbangan)
+        if (!tokenVal) {
+            errorTarikToken.innerHTML = `<i class="bi bi-exclamation-circle me-1"></i> Wajib diisi token`;
+            errorTarikToken.style.display = "block";
+            tarikToken.classList.add("input-error");
+            valid = false;
+        } else if (!/^\d{6}$/.test(tokenVal)) {
+            errorTarikToken.innerHTML = `<i class="bi bi-exclamation-circle me-1"></i> Token harus 6 digit angka`;
+            errorTarikToken.style.display = "block";
+            tarikToken.classList.add("input-error");
+            valid = false;
+        } else {
+            errorTarikToken.style.display = "none";
+            tarikToken.classList.remove("input-error");
         }
 
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>Memproses...`;
+        // 3. Validasi Nominal Penarikan
+        if (!nominalVal || nominalVal <= 0) {
+            errorTarikNominal.innerHTML = `<i class="bi bi-exclamation-circle me-1"></i> Masukkan nominal penarikan yang valid`;
+            errorTarikNominal.style.display = "block";
+            tarikNominal.classList.add("input-error");
+            valid = false;
+        } else {
+            errorTarikNominal.style.display = "none";
+            tarikNominal.classList.remove("input-error");
+        }
+
+        if (!valid) return;
+
+        tarikResult.style.display = "block";
+        tarikResult.className = "saldo-result status-loading text-center p-3 mt-3";
+        tarikResult.innerHTML = `<i class="bi bi-hourglass-split me-1"></i> Memproses persetujuan penarikan...`;
+        btnTarikSaldo.disabled = true;
 
         try {
+            // A. Cek data nasabah ke database
+            const resNasabah = await fetch(`${API_URL}/api/nasabah`);
+            const dataNasabah = await resNasabah.json();
+
+            if (!resNasabah.ok || !dataNasabah.success) {
+                throw new Error(dataNasabah.message || "Gagal menghubungi database nasabah");
+            }
+
+            const nasabah = dataNasabah.data.find(function (item) {
+                return String(item.noKK).trim() === noKKVal;
+            });
+
+            if (!nasabah) {
+                throw new Error("Nomor KK tidak terdaftar dalam sistem.");
+            }
+
+            if (nominalVal > Number(nasabah.saldo)) {
+                throw new Error(`Saldo tidak mencukupi. Saldo saat ini: ${formatRupiah(nasabah.saldo)}`);
+            }
+
+            // B. Kirim persetujuan penarikan ke backend
             const payload = {
-                device_id: activeSession.device_id,
-                id_nasabah: activeSession.id_nasabah,
-                token: token,
-                jumlah_penarikan: jumlah,
-                keterangan: keterangan || "Penarikan tunai"
+                device_id: "ESP32-KINASIH-01",
+                id_nasabah: nasabah.idNasabah,
+                token: tokenVal,
+                jumlah_penarikan: nominalVal,
+                keterangan: "Penarikan tunai pos"
             };
 
-            const res = await fetch(`${API_URL}/api/penarikan/approve`, {
+            const approveRes = await fetch(`${API_URL}/api/penarikan/approve`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload)
             });
-            const result = await res.json();
+            const approveResult = await approveRes.json();
 
-            if (!res.ok || !result.success) {
-                throw new Error(result.message || "Gagal menyetujui penarikan");
+            if (!approveRes.ok || !approveResult.success) {
+                throw new Error(approveResult.message || "Gagal memproses penarikan saldo");
             }
 
-            clearInterval(countdownInterval);
-            alert(`Pencairan Berhasil Disetujui!\nJumlah Ditarik: ${formatRupiah(jumlah)}\nSisa Saldo: ${formatRupiah(result.data.saldo_sesudah)}`);
-            
-            if (modalProses) modalProses.hide();
-            activeSession = null;
+            // C. Tampilkan bukti penarikan berhasil
+            const saldoSisa = approveResult.data?.saldo_sesudah ?? (nasabah.saldo - nominalVal);
 
-        } catch (err) {
-            errorEl.innerHTML = `<i class="bi bi-x-circle me-1"></i> ${err.message}`;
-            errorEl.style.display = "block";
+            tarikResult.className = "saldo-result status-success mt-3 p-3 border rounded bg-light text-start";
+            tarikResult.innerHTML = `
+                <div class="d-flex align-items-center text-success fw-bold mb-2">
+                    <i class="bi bi-check-circle-fill fs-5 me-2"></i> Penarikan Berhasil Disetujui!
+                </div>
+                <div style="font-size: 0.9rem; color: #666;">Nama Nasabah:</div>
+                <div style="font-size: 1.15rem; font-weight: bold; color: #222;">${nasabah.nama}</div>
+                <hr style="margin: 8px 0;">
+                <div class="d-flex justify-content-between mb-1">
+                    <span style="font-size: 0.9rem; color: #666;">Nominal Ditarik:</span>
+                    <span class="fw-bold text-danger">${formatRupiah(nominalVal)}</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span style="font-size: 0.9rem; color: #666;">Sisa Saldo:</span>
+                    <span class="fw-bold text-success">${formatRupiah(saldoSisa)}</span>
+                </div>
+            `;
+
+            // Reset field token dan nominal
+            tarikToken.value = "";
+            tarikNominal.value = "";
+
+        } catch (error) {
+            console.error(error);
+            tarikResult.className = "saldo-result status-error text-danger mt-3 text-center";
+            tarikResult.innerHTML = `<i class="bi bi-x-circle me-1"></i> ${error.message}`;
         } finally {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = `<i class="bi bi-check2-circle me-1"></i> Setujui & Cairkan Saldo`;
+            btnTarikSaldo.disabled = false;
         }
     });
 }

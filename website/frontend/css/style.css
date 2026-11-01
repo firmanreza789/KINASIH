@@ -180,7 +180,7 @@ body {
 }
 
 
-/* INPUT TANGGAL */
+/* INPUT TANGGAL & FORM */
 
 .date-input {
     /* Tinggi input agar mudah ditekan di HP */
@@ -210,7 +210,7 @@ body {
 }
 
 
-/* TOMBOL EXPORT */
+/* TOMBOL EXPORT & AKSI */
 
 .btn-export {
     /* Warna utama tombol */
@@ -251,7 +251,7 @@ body {
 }
 
 
-/* STATUS EXPORT */
+/* STATUS PESAN */
 
 .status-message {
     display: none;
@@ -272,7 +272,7 @@ body {
 }
 
 
-/* Saat proses export */
+/* Saat proses loading */
 
 .status-loading {
     display: block;
@@ -281,7 +281,7 @@ body {
 }
 
 
-/* Saat export berhasil */
+/* Saat berhasil */
 
 .status-success {
     display: block;
@@ -290,7 +290,7 @@ body {
 }
 
 
-/* Saat export gagal */
+/* Saat gagal */
 
 .status-error {
     display: block;
@@ -298,14 +298,15 @@ body {
     color: #842029;
 }
 
-/* CARD CEK SALDO */
+
+/* CARD CEK SALDO & PENARIKAN SALDO */
 
 .balance-card {
     margin-top: 30px;
 }
 
 
-/* HASIL SALDO */
+/* HASIL SALDO & BUKTI PENARIKAN */
 
 .saldo-result {
     display: none;
@@ -450,47 +451,31 @@ body {
 }
 
 
-/* ========================================== */
-/* STYLING FITUR PENARIKAN SALDO KASIR       */
-/* ========================================== */
+/* ================================================= */
+/* STYLING KHUSUS INPUT TOKEN 6 DIGIT PENARIKAN     */
+/* ================================================= */
 
-/* Notifikasi Toast Penarikan */
-#toastPenarikan {
-    border-radius: 12px;
-    background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%);
-    box-shadow: 0 8px 25px rgba(255, 179, 0, 0.4);
-    animation: toastBounce 0.5s ease-in-out;
-}
-
-@keyframes toastBounce {
-    0% { transform: translateY(-20px); opacity: 0; }
-    70% { transform: translateY(4px); }
-    100% { transform: translateY(0); opacity: 1; }
-}
-
-/* Input Token 6 Digit (Font Monospace & Spasi Renggang ala OTP) */
-#inputTokenPenarikan {
+#tarikToken {
     font-family: 'Courier New', Courier, monospace;
-    letter-spacing: 8px;
-    font-size: 1.8rem;
+    letter-spacing: 6px; /* Memberi jarak renggang antar angka */
+    font-size: 1.35rem;
     font-weight: 700;
     color: var(--primary);
-    background-color: #f0f7f3;
-    border: 2px dashed #9bc4ad;
+    background-color: #f7faf8;
+    border: 1.5px solid #a3c4b0;
 }
 
-#inputTokenPenarikan:focus {
+#tarikToken:focus {
     background-color: #ffffff;
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(29, 85, 62, 0.2);
+    box-shadow: 0 0 0 3px rgba(29, 85, 62, 0.15);
 }
 
-/* Countdown Badge */
-#countdownToken {
-    min-width: 45px;
-    text-align: center;
-    font-weight: 700;
-    letter-spacing: 1px;
+#tarikToken::placeholder {
+    letter-spacing: 2px;
+    font-size: 0.95rem;
+    font-weight: 400;
+    color: #9ca3af;
 }
 
 
@@ -542,8 +527,9 @@ body {
         padding: 12px;
     }
 
-    #inputTokenPenarikan {
-        letter-spacing: 5px;
-        font-size: 1.5rem;
+    /* Token input di layar HP */
+    #tarikToken {
+        letter-spacing: 4px;
+        font-size: 1.2rem;
     }
 }
