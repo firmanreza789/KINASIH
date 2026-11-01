@@ -40,7 +40,7 @@ const formatRupiah = (angka) => {
 
 
 // ====================================================================
-// 1. FITUR EXPORT LAPORAN KE EXCEL
+// 1. FITUR EXPORT LAPORAN KE EXCEL (1 SHEET GABUNGAN: SETORAN & PENARIKAN)
 // ====================================================================
 btnExport.addEventListener("click", async function () {
     const mulai = tanggalMulai.value;
@@ -79,88 +79,198 @@ btnExport.addEventListener("click", async function () {
     tanggalAkhir.classList.remove("input-error");
 
     status.className = "status-message status-loading";
-    status.innerHTML = `<i class="bi bi-hourglass-split me-1"></i> Menyiapkan laporan...`;
+    status.innerHTML = `<i class="bi bi-hourglass-split me-1"></i> Menyiapkan laporan gabungan...`;
     btnExport.disabled = true;
 
     try {
-        const response = await fetch(`${API_URL}/api/transaksi`, {
+        // A. Ambil Data Setoran Sampah (Uang Masuk)
+        const resTransaksi = await fetch(`${API_URL}/api/transaksi`, {
             method: 'GET',
             headers: {
                 'X-API-KEY': API_KEY,
                 'Content-Type': 'application/json'
             }
         });
-        const result = await response.json();
+        const resultTransaksi = await resTransaksi.json();
 
-        if (!response.ok || !result.success) {
-            throw new Error(result.message || "Gagal mengambil data transaksi");
+        if (!resTransaksi.ok || !resultTransaksi.success) {
+            throw new Error(resultTransaksi.message || "Gagal mengambil data transaksi timbangan");
         }
 
-        const transaksi = result.data.filter(function (item) {
-            const tanggal = (item.tanggal_waktu || "").substring(0, 10);
-            return tanggal >= mulai && tanggal <= akhir;
+        // B. Ambil Data Penarikan Kas (Uang Keluar)
+        let dataPenarikan = [];
+        try {
+            const resPenarikan = await fetch(`${API_URL}/api/penarikan`, {
+                method: 'GET',
+                headers: {
+                    'X-API-KEY': API_KEY,
+                    'Content-Type': 'application/json'
+                }
+            });
+            if (resPenarikan.ok) {
+                const resultPenarikan = await resPenarikan.json();
+                dataPenarikan = Array.isArray(resultPenarikan) ? resultPenarikan : (resultPenarikan.data || []);
+            }
+        } catch (e) {
+            console.warn("Info penarikan:", e);
+        }
+
+        const listGabungan = [];
+
+        // 1. Masukkan Transaksi Setoran Sampah
+        const transaksiFilter = resultTransaksi.data.filter(function (item) {
+            const tgl = (item.tanggal_waktu || item.tanggal || "").substring(0, 10);
+            return tgl >= mulai && tgl <= akhir;
         });
 
-        const dataLaporan = [];
+        transaksiFilter.forEach(function (item) {
+            const tglStr = item.tanggal_waktu || item.tanggal;
+            const tglObj = new Date(tglStr);
 
-        transaksi.forEach(function (item) {
             if (Array.isArray(item.items)) {
                 item.items.forEach(function (detail) {
-                    dataLaporan.push({
-                        No: dataLaporan.length + 1,
-                        Tanggal: new Date(item.tanggal_waktu).toLocaleDateString("id-ID"),
-                        "No KK": item.no_kk,                
-                        "Nama Nasabah": item.nama,          
-                        "Jenis Sampah": detail.nama_jenis,  
-                        "Berat (Kg)": Number(detail.berat_kg), 
-                        "Harga/Kg": Number(detail.harga_per_kg), 
-                        Subtotal: Number(detail.subtotal)   
+                    listGabungan.push({
+                        timestamp: tglObj.getTime(),
+                        tanggalFormatted: tglObj.toLocaleDateString("id-ID"),
+                        noKK: item.no_kk || item.noKK || "-",
+                        nama: item.nama || item.nasabahNama || "-",
+                        keterangan: detail.nama_jenis || detail.jenisSampah || "Setor Sampah",
+                        berat: Number(detail.berat_kg || detail.berat || 0),
+                        masuk: Number(detail.subtotal || detail.total || 0),
+                        keluar: 0
                     });
                 });
             }
         });
 
-        if (dataLaporan.length === 0) {
+        // 2. Masukkan Transaksi Penarikan Uang Kas
+        const penarikanFilter = dataPenarikan.filter(function (item) {
+            const rawTgl = item.tanggal || item.tanggal_transaksi || item.createdAt || "";
+            const tgl = String(rawTgl).substring(0, 10);
+            return tgl >= mulai && tgl <= akhir;
+        });
+
+        penarikanFilter.forEach(function (item) {
+            const rawTgl = item.tanggal || item.tanggal_transaksi || item.createdAt;
+            const tglObj = new Date(rawTgl);
+            const nominal = Number(item.jumlahPenarikan || item.jumlah_penarikan || item.jumlah || 0);
+            const noKKTarik = item.no_kk || item.noKK || item.nasabah?.noKK || item.nasabah?.no_kk || "-";
+            const namaTarik = item.nama || item.nasabah?.nama || item.nasabahNama || "-";
+
+            listGabungan.push({
+                timestamp: tglObj.getTime(),
+                tanggalFormatted: tglObj.toLocaleDateString("id-ID"),
+                noKK: noKKTarik,
+                nama: namaTarik,
+                keterangan: item.keterangan || "Penarikan Tunai",
+                berat: null,
+                masuk: 0,
+                keluar: nominal
+            });
+        });
+
+        if (listGabungan.length === 0) {
             status.className = "status-message status-error";
             status.innerHTML = `<i class="bi bi-exclamation-circle me-1"></i> Tidak ada transaksi pada periode tersebut.`;
             return;
         }
 
+        // 3. Urutkan berdasarkan tanggal & waktu transaksi
+        listGabungan.sort(function (a, b) {
+            return a.timestamp - b.timestamp;
+        });
+
+        // 4. Buat Baris Tabel Laporan
+        let totalSetoran = 0;
+        let totalPenarikan = 0;
+
+        const dataLaporan = listGabungan.map(function (item, idx) {
+            totalSetoran += item.masuk;
+            totalPenarikan += item.keluar;
+
+            return {
+                No: idx + 1,
+                Tanggal: item.tanggalFormatted,
+                "No KK": item.noKK,
+                "Nama Nasabah": item.nama,
+                "Jenis Transaksi / Sampah": item.keterangan,
+                "Berat (Kg)": item.berat !== null ? item.berat : "-",
+                "Setoran Masuk (Rp)": item.masuk > 0 ? item.masuk : "-",
+                "Penarikan Keluar (Rp)": item.keluar > 0 ? item.keluar : "-"
+            };
+        });
+
+        // 5. Tambahkan Baris Total & Sisa Saldo di Baris Terbawah
+        dataLaporan.push({
+            No: "",
+            Tanggal: "",
+            "No KK": "",
+            "Nama Nasabah": "",
+            "Jenis Transaksi / Sampah": "TOTAL SETORAN MASUK (+)",
+            "Berat (Kg)": "-",
+            "Setoran Masuk (Rp)": totalSetoran,
+            "Penarikan Keluar (Rp)": "-"
+        });
+
+        dataLaporan.push({
+            No: "",
+            Tanggal: "",
+            "No KK": "",
+            "Nama Nasabah": "",
+            "Jenis Transaksi / Sampah": "TOTAL PENARIKAN KELUAR (-)",
+            "Berat (Kg)": "-",
+            "Setoran Masuk (Rp)": "-",
+            "Penarikan Keluar (Rp)": totalPenarikan
+        });
+
+        dataLaporan.push({
+            No: "",
+            Tanggal: "",
+            "No KK": "",
+            "Nama Nasabah": "",
+            "Jenis Transaksi / Sampah": "SISA SALDO BERSIH",
+            "Berat (Kg)": "-",
+            "Setoran Masuk (Rp)": totalSetoran - totalPenarikan,
+            "Penarikan Keluar (Rp)": ""
+        });
+
+        // 6. Generate Excel (1 Sheet)
         const worksheet = XLSX.utils.json_to_sheet(dataLaporan);
         const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Laporan");
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Laporan Keuangan");
 
+        // Format Lebar Kolom
         worksheet["!cols"] = [
-            { wch: 5 },   
-            { wch: 15 },  
-            { wch: 20 },  
-            { wch: 22 },  
-            { wch: 20 },  
-            { wch: 12 },  
-            { wch: 15 },   
-            { wch: 15 }   
+            { wch: 6 },   // No
+            { wch: 14 },  // Tanggal
+            { wch: 20 },  // No KK
+            { wch: 22 },  // Nama
+            { wch: 28 },  // Keterangan
+            { wch: 12 },  // Berat
+            { wch: 20 },  // Setoran Masuk
+            { wch: 20 }   // Penarikan Keluar
         ];
 
+        // Format Mata Uang Rupiah di Excel
         const range = XLSX.utils.decode_range(worksheet["!ref"]);
-
         for (let row = 1; row <= range.e.r; row++) {
-            const hargaCell = worksheet[XLSX.utils.encode_cell({ r: row, c: 6 })];
-            const subtotalCell = worksheet[XLSX.utils.encode_cell({ r: row, c: 7 })];
+            const masukCell = worksheet[XLSX.utils.encode_cell({ r: row, c: 6 })];
+            const keluarCell = worksheet[XLSX.utils.encode_cell({ r: row, c: 7 })];
 
-            if (hargaCell) hargaCell.z = '"Rp" #,##0';
-            if (subtotalCell) subtotalCell.z = '"Rp" #,##0';
+            if (masukCell && typeof masukCell.v === "number") masukCell.z = '"Rp" #,##0';
+            if (keluarCell && typeof keluarCell.v === "number") keluarCell.z = '"Rp" #,##0';
         }
 
         const namaFile = `Laporan_KINASIH_${mulai}_${akhir}.xlsx`;
         XLSX.writeFile(workbook, namaFile);
 
         status.className = "status-message status-success";
-        status.innerHTML = `<i class="bi bi-check-circle-fill me-1"></i> Laporan berhasil diexport.`;
+        status.innerHTML = `<i class="bi bi-check-circle-fill me-1"></i> Laporan gabungan berhasil diexport!`;
 
     } catch (error) {
         console.error(error);
         status.className = "status-message status-error";
-        status.innerHTML = `<i class="bi bi-x-circle me-1"></i> Gagal mengambil data transaksi. (${error.message})`;
+        status.innerHTML = `<i class="bi bi-x-circle me-1"></i> Gagal export laporan. (${error.message})`;
     } finally {
         btnExport.disabled = false;
     }
@@ -242,7 +352,7 @@ if (btnTarikSaldo) {
         const nominalVal = Number(tarikNominal ? tarikNominal.value : 0);
         let valid = true;
 
-        // 1. Validasi Nomor KK (16 digit angka)
+        // 1. Validasi Nomor KK
         if (!noKKVal) {
             errorTarikKK.innerHTML = `<i class="bi bi-exclamation-circle me-1"></i> Wajib diisi`;
             errorTarikKK.style.display = "block";
@@ -258,7 +368,7 @@ if (btnTarikSaldo) {
             tarikNoKK.classList.remove("input-error");
         }
 
-        // 2. Validasi Token (6 digit angka dari timbangan)
+        // 2. Validasi Token (6 digit)
         if (!tokenVal) {
             errorTarikToken.innerHTML = `<i class="bi bi-exclamation-circle me-1"></i> Wajib diisi token`;
             errorTarikToken.style.display = "block";
