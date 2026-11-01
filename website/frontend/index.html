@@ -1,240 +1,201 @@
 <!doctype html>
 <html lang="id">
-    <head>
+<head>
     <meta charset="UTF-8" />
-
-    <!-- Tampilan responsive di HP -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
     <title>Laporan Timbangan - KINASIH</title>
-
     <link rel="icon" type="image/png" href="assets/logokinasih.png">
 
-    <!-- Bootstrap layout dan komponen dasar -->
-    <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-    rel="stylesheet"
-    />
+    <!-- bootstrap & icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
 
-    <!-- Bootstrap Icons (Pengganti Emoji) -->
-    <link 
-    rel="stylesheet" 
-    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
-    />
-
-    <!-- CSS -->
+    <!-- custom css -->
     <link rel="stylesheet" href="css/style.css" />
-    </head>
+</head>
 
-    <body>
-    <!-- HEADER -->
+<body>
+    <!-- header -->
     <header class="header">
-    <div class="container">
-        <!-- Logo dan nama aplikasi -->
-        <div class="brand">
-        <img src="assets/logokinasih.png" alt="Logo KINASIH" class="logo" />
-
-        <div>
-            <h1>KINASIH</h1>
-            <p>Kita Nabung Sampah Indonesia Bersih</p>
+        <div class="container">
+            <div class="brand">
+                <img src="assets/logokinasih.png" alt="Logo KINASIH" class="logo" />
+                <div>
+                    <h1>KINASIH</h1>
+                    <p>Kita Nabung Sampah Indonesia Bersih</p>
+                </div>
+            </div>
         </div>
-        </div>
-    </div>
     </header>
 
-    <!-- KONTEN UTAMA -->
+    <!-- konten utama -->
     <main class="main-content">
-    <div class="container">
+        <div class="container">
 
-        <!-- CARD 1: LAPORAN TIMBANGAN -->
-        <div class="report-card">
+            <!-- card 1: export laporan -->
+            <div class="report-card">
+                <div class="text-center mb-4">
+                    <h2><i class="bi bi-file-earmark-spreadsheet text-success me-2"></i>Laporan Timbangan</h2>
+                    <p class="description">Pilih periode untuk mengunduh laporan.</p>
+                </div>
 
-        <div class="text-center mb-4">
-            <h2><i class="bi bi-file-earmark-spreadsheet text-success me-2"></i>Laporan Timbangan</h2>
-            <p class="description">Pilih periode untuk mengunduh laporan.</p>
-        </div>
+                <!-- input tanggal mulai -->
+                <div class="mb-3">
+                    <label for="tanggalMulai" class="form-label">
+                        Tanggal Mulai <span class="required">*</span>
+                    </label>
+                    <input type="date" id="tanggalMulai" class="form-control date-input" />
+                    <div id="errorMulai" class="error-message">
+                        <i class="bi bi-exclamation-circle me-1"></i> Wajib diisi
+                    </div>
+                </div>
 
-        <!-- Tanggal mulai -->
-        <div class="mb-3">
-            <label for="tanggalMulai" class="form-label">
-            Tanggal Mulai <span class="required">*</span>
-            </label>
+                <!-- input tanggal akhir -->
+                <div class="mb-4">
+                    <label for="tanggalAkhir" class="form-label">
+                        Tanggal Akhir <span class="required">*</span>
+                    </label>
+                    <input type="date" id="tanggalAkhir" class="form-control date-input" />
+                    <div id="errorAkhir" class="error-message">
+                        <i class="bi bi-exclamation-circle me-1"></i> Wajib diisi
+                    </div>
+                </div>
 
-            <input
-            type="date"
-            id="tanggalMulai"
-            class="form-control date-input"
-            />
+                <div id="errorTanggal" class="error-message">
+                    <i class="bi bi-exclamation-triangle me-1"></i> Tanggal mulai tidak boleh setelah tanggal akhir.
+                </div>
 
-            <div id="errorMulai" class="error-message">
-                <i class="bi bi-exclamation-circle me-1"></i> Wajib diisi
+                <!-- tombol export -->
+                <button type="button" id="btnExport" class="btn btn-export w-100">
+                    <i class="bi bi-download me-2"></i> Export Laporan
+                </button>
+
+                <!-- status export -->
+                <div id="status" class="status-message" aria-live="polite"></div>
             </div>
-        </div>
 
-        <!-- Tanggal akhir -->
-        <div class="mb-4">
-            <label for="tanggalAkhir" class="form-label">
-            Tanggal Akhir <span class="required">*</span>
-            </label>
+            <!-- card 2: cek saldo warga -->
+            <div class="report-card balance-card">
+                <div class="text-center mb-4">
+                    <h2><i class="bi bi-wallet2 text-success me-2"></i>Cek Saldo Warga</h2>
+                    <p class="description">
+                        Masukkan nomor KK untuk melihat saldo.
+                    </p>
+                </div>
 
-            <input
-            type="date"
-            id="tanggalAkhir"
-            class="form-control date-input"
-            />
+                <!-- input nomor kk -->
+                <div class="mb-4">
+                    <label for="noKK" class="form-label">
+                        Nomor KK <span class="required">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        id="noKK"
+                        class="form-control date-input"
+                        inputmode="numeric"
+                        placeholder="Masukkan nomor KK"
+                        maxlength="16"
+                    />
+                    <div id="errorKK" class="error-message">
+                        <i class="bi bi-exclamation-circle me-1"></i> Wajib diisi (16 digit)
+                    </div>
+                </div>
 
-            <div id="errorAkhir" class="error-message">
-                <i class="bi bi-exclamation-circle me-1"></i> Wajib diisi
+                <!-- tombol cek saldo -->
+                <button type="button" id="btnCekSaldo" class="btn btn-export w-100">
+                    <i class="bi bi-search me-2"></i> Cek Saldo
+                </button>
+
+                <!-- hasil saldo -->
+                <div id="saldoResult" class="saldo-result"></div>
             </div>
-        </div>
 
-        <div id="errorTanggal" class="error-message">
-            <i class="bi bi-exclamation-triangle me-1"></i> Tanggal mulai tidak boleh setelah tanggal akhir.
-        </div>
+            <!-- card 3: penarikan saldo -->
+            <div class="report-card balance-card">
+                <div class="text-center mb-4">
+                    <h2><i class="bi bi-cash-stack text-success me-2"></i>Penarikan Saldo</h2>
+                    <p class="description">
+                        Masukkan nomor KK, token dari timbangan, dan nominal penarikan.
+                    </p>
+                </div>
 
-        <!-- TOMBOL EXPORT -->
-        <button type="button" id="btnExport" class="btn btn-export w-100">
-            <i class="bi bi-download me-2"></i> Export Laporan
-        </button>
+                <!-- input nomor kk -->
+                <div class="mb-3">
+                    <label for="tarikNoKK" class="form-label">
+                        Nomor KK <span class="required">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        id="tarikNoKK"
+                        class="form-control date-input"
+                        inputmode="numeric"
+                        placeholder="Masukkan 16 digit nomor KK"
+                        maxlength="16"
+                    />
+                    <div id="errorTarikKK" class="error-message">
+                        <i class="bi bi-exclamation-circle me-1"></i> Wajib diisi (16 digit nomor KK)
+                    </div>
+                </div>
 
-        <!-- STATUS EXPORT -->
-        <div id="status" class="status-message" aria-live="polite"></div>
-        </div>
+                <!-- input token 6 digit dari timbangan -->
+                <div class="mb-3">
+                    <label for="tarikToken" class="form-label">
+                        Token Timbangan (6 Digit) <span class="required">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        id="tarikToken"
+                        class="form-control date-input text-center fw-bold font-monospace"
+                        inputmode="numeric"
+                        placeholder="Contoh: 482193"
+                        maxlength="6"
+                    />
+                    <div id="errorTarikToken" class="error-message">
+                        <i class="bi bi-exclamation-circle me-1"></i> Wajib diisi 6 digit angka token
+                    </div>
+                </div>
 
+                <!-- input nominal penarikan -->
+                <div class="mb-4">
+                    <label for="tarikNominal" class="form-label">
+                        Nominal Penarikan (Rp) <span class="required">*</span>
+                    </label>
+                    <input
+                        type="number"
+                        id="tarikNominal"
+                        class="form-control date-input fw-bold"
+                        placeholder="Contoh: 50000"
+                        min="1000"
+                        step="1000"
+                    />
+                    <div id="errorTarikNominal" class="error-message">
+                        <i class="bi bi-exclamation-circle me-1"></i> Masukkan nominal penarikan yang valid
+                    </div>
+                </div>
 
-        <!-- CARD 2: CEK SALDO WARGA -->
-        <div class="report-card balance-card">
+                <!-- tombol tarik saldo -->
+                <button type="button" id="btnTarikSaldo" class="btn btn-export w-100">
+                    <i class="bi bi-cash-coin me-2"></i> Tarik Saldo
+                </button>
 
-        <div class="text-center mb-4">
-            <h2><i class="bi bi-wallet2 text-success me-2"></i>Cek Saldo Warga</h2>
-            <p class="description">
-                Masukkan nomor KK untuk melihat saldo.
-            </p>
-        </div>
-
-        <!-- Nomor KK -->
-        <div class="mb-4">
-            <label for="noKK" class="form-label">
-            Nomor KK <span class="required">*</span>
-            </label>
-
-            <input
-            type="text"
-            id="noKK"
-            class="form-control date-input"
-            inputmode="numeric"
-            placeholder="Masukkan nomor KK"
-            maxlength="16"
-            />
-
-            <div id="errorKK" class="error-message">
-                <i class="bi bi-exclamation-circle me-1"></i> Wajib diisi (16 digit)
+                <!-- hasil penarikan -->
+                <div id="tarikResult" class="saldo-result"></div>
             </div>
-        </div>
-
-        <!-- TOMBOL CEK SALDO -->
-        <button type="button" id="btnCekSaldo" class="btn btn-export w-100">
-            <i class="bi bi-search me-2"></i> Cek Saldo
-        </button>
-
-        <!-- HASIL SALDO -->
-        <div id="saldoResult" class="saldo-result"></div>
 
         </div>
-
-
-        <!-- CARD 3: PENARIKAN SALDO (KASIR / PAK BABAN) -->
-        <div class="report-card balance-card">
-
-        <div class="text-center mb-4">
-            <h2><i class="bi bi-cash-stack text-success me-2"></i>Penarikan Saldo</h2>
-            <p class="description">
-                Masukkan nomor KK, token dari timbangan, dan nominal penarikan.
-            </p>
-        </div>
-
-        <!-- Nomor KK Nasabah -->
-        <div class="mb-3">
-            <label for="tarikNoKK" class="form-label">
-                Nomor KK <span class="required">*</span>
-            </label>
-            <input
-                type="text"
-                id="tarikNoKK"
-                class="form-control date-input"
-                inputmode="numeric"
-                placeholder="Masukkan 16 digit nomor KK"
-                maxlength="16"
-            />
-            <div id="errorTarikKK" class="error-message">
-                <i class="bi bi-exclamation-circle me-1"></i> Wajib diisi (16 digit nomor KK)
-            </div>
-        </div>
-
-        <!-- Token 6 Digit dari Layar Timbangan -->
-        <div class="mb-3">
-            <label for="tarikToken" class="form-label">
-                Token Timbangan (6 Digit) <span class="required">*</span>
-            </label>
-            <input
-                type="text"
-                id="tarikToken"
-                class="form-control date-input text-center fw-bold font-monospace"
-                inputmode="numeric"
-                placeholder="Contoh: 482193"
-                maxlength="6"
-            />
-            <div id="errorTarikToken" class="error-message">
-                <i class="bi bi-exclamation-circle me-1"></i> Wajib diisi 6 digit angka token
-            </div>
-        </div>
-
-        <!-- Nominal Penarikan -->
-        <div class="mb-4">
-            <label for="tarikNominal" class="form-label">
-                Nominal Penarikan (Rp) <span class="required">*</span>
-            </label>
-            <input
-                type="number"
-                id="tarikNominal"
-                class="form-control date-input fw-bold"
-                placeholder="Contoh: 50000"
-                min="1000"
-                step="1000"
-            />
-            <div id="errorTarikNominal" class="error-message">
-                <i class="bi bi-exclamation-circle me-1"></i> Masukkan nominal penarikan yang valid
-            </div>
-        </div>
-
-        <!-- TOMBOL TARIK SALDO -->
-        <button type="button" id="btnTarikSaldo" class="btn btn-export w-100">
-            <i class="bi bi-cash-coin me-2"></i> Tarik Saldo
-        </button>
-
-        <!-- HASIL PENARIKAN -->
-        <div id="tarikResult" class="saldo-result"></div>
-
-        </div>
-
-    </div>
     </main>
 
-    <!-- ========================================== -->
-    <!-- TOMBOL BANTUAN MELAYANG (POJOK KANAN BAWAH) -->
-    <!-- ========================================== -->
+    <!-- floating button bantuan -->
     <button type="button" class="btn-floating-bantuan" data-bs-toggle="modal" data-bs-target="#modalBantuan">
         <i class="bi bi-question-circle-fill me-1"></i> Bantuan Timbangan
     </button>
 
-    <!-- ================================================================= -->
-    <!-- MODAL PANDUAN TEKNIS OPERASIONAL TIMBANGAN DIGITAL SMARTSCALE     -->
-    <!-- ================================================================= -->
+    <!-- modal panduan timbangan -->
     <div class="modal fade" id="modalBantuan" tabindex="-1" aria-labelledby="modalBantuanLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
             <div class="modal-content" style="border-radius: 12px; overflow: hidden; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
                 
-                <!-- HEADER MODAL -->
+                <!-- header modal -->
                 <div class="modal-header py-3" style="background-color: #1D553E; color: white;">
                     <div>
                         <h5 class="modal-title fw-bold mb-0 fs-6" id="modalBantuanLabel">
@@ -245,10 +206,10 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Tutup"></button>
                 </div>
 
-                <!-- ISI MODAL (10 BAB LENGKAP) -->
+                <!-- isi modal panduan -->
                 <div class="modal-body p-3 p-md-4" style="background-color: #f9fafb;">
                     
-                    <!-- BANNER DOKUMEN CETAK -->
+                    <!-- link download pdf -->
                     <div class="p-3 mb-3 rounded-2 d-flex align-items-center justify-content-between" 
                          style="background-color: #eef7f2; border: 1px solid #c2e2d0;">
                         <div>
@@ -260,10 +221,10 @@
                         </a>
                     </div>
 
-                    <!-- ACCORDION BAB -->
+                    <!-- accordion bab panduan -->
                     <div class="accordion accordion-panduan" id="accordionPanduan">
 
-                        <!-- BAB 1 -->
+                        <!-- bab 1 -->
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingSatu">
                                 <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSatu">
@@ -291,7 +252,7 @@
                             </div>
                         </div>
 
-                        <!-- BAB 2 -->
+                        <!-- bab 2 -->
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingDua">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDua">
@@ -319,7 +280,7 @@
                             </div>
                         </div>
 
-                        <!-- BAB 3 -->
+                        <!-- bab 3 -->
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingTiga">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTiga">
@@ -346,7 +307,7 @@
                             </div>
                         </div>
 
-                        <!-- BAB 4 -->
+                        <!-- bab 4 -->
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingEmpat">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEmpat">
@@ -403,7 +364,7 @@
                             </div>
                         </div>
 
-                        <!-- BAB 5 -->
+                        <!-- bab 5 -->
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingLima">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseLima">
@@ -419,7 +380,7 @@
                                         <small>[Foto: Menu Setor Timbang]</small>
                                     </div>
 
-                                    <!-- Langkah 1 -->
+                                    <!-- langkah 1 -->
                                     <h6 class="fw-bold mt-3" style="color: #1D553E;">Langkah 1: Pemilihan Nasabah</h6>
                                     <ol class="ps-3 mb-2">
                                         <li>Buka menu <strong>Setor Timbang</strong>.</li>
@@ -436,7 +397,7 @@
                                         <small>[Foto: Halaman Pemilihan Nasabah]</small>
                                     </div>
 
-                                    <!-- Langkah 2 -->
+                                    <!-- langkah 2 -->
                                     <h6 class="fw-bold mt-3" style="color: #1D553E;">Langkah 2: Pemilihan Kategori Sampah</h6>
                                     <p class="mb-2">Nama nasabah terpilih tampil pada bilah atas. Terdapat 5 kategori komoditas:</p>
                                     <ul class="ps-3 mb-2">
@@ -451,7 +412,7 @@
                                         <small>[Foto: Halaman Kategori Sampah]</small>
                                     </div>
 
-                                    <!-- Langkah 3 -->
+                                    <!-- langkah 3 -->
                                     <h6 class="fw-bold mt-3" style="color: #1D553E;">Langkah 3: Pemilihan Jenis Sampah & Verifikasi Tarif</h6>
                                     <p class="mb-2">Pilih jenis komoditas spesifik. Tarif per kilogram tertera di bawah masing-masing nama komoditas:</p>
                                     <ul class="ps-3 mb-2">
@@ -474,7 +435,7 @@
                                         <small>[Foto: Halaman Input Harga Lainnya]</small>
                                     </div>
 
-                                    <!-- Langkah 4 -->
+                                    <!-- langkah 4 -->
                                     <h6 class="fw-bold mt-3" style="color: #1D553E;">Langkah 4: Prosedur Penimbangan</h6>
                                     <ol class="ps-3 mb-2">
                                         <li>Layar memvalidasi identitas Nasabah, Jenis Sampah, dan pembacaan Berat Bersih (Kg).</li>
@@ -487,7 +448,7 @@
                                         <small>[Foto: Halaman Penimbangan Sampah]</small>
                                     </div>
 
-                                    <!-- Langkah 5 -->
+                                    <!-- langkah 5 -->
                                     <h6 class="fw-bold mt-3" style="color: #1D553E;">Langkah 5: Ringkasan & Eksekusi Transaksi</h6>
                                     <p class="mb-2">Sistem menampilkan rincian: Tanggal Setor, Nama Nasabah, Jenis Sampah, Berat (Kg), Tarif/Kg, dan Total Nilai Transaksi (Berat × Tarif).</p>
                                     
@@ -519,7 +480,7 @@
                             </div>
                         </div>
 
-                        <!-- BAB 6: DATA NASABAH & PENARIKAN SALDO -->
+                        <!-- bab 6 -->
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingEnam">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEnam">
@@ -560,7 +521,7 @@
                                         <small>[Foto: Halaman Detail Nasabah & Token]</small>
                                     </div>
 
-                                    <!-- KOTAK ALUR PENARIKAN SALDO DARI KETUA -->
+                                    <!-- alur penarikan saldo -->
                                     <div class="p-3 my-3 rounded bg-light border-start border-success border-4">
                                         <h6 class="fw-bold text-success mb-2">
                                             <i class="bi bi-cash-stack me-2"></i>Alur Penarikan Saldo Warga di Pos:
@@ -595,7 +556,7 @@
                             </div>
                         </div>
 
-                        <!-- BAB 7 -->
+                        <!-- bab 7 -->
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingTujuh">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTujuh">
@@ -611,7 +572,7 @@
                                         <small>[Foto: Menu Pengaturan]</small>
                                     </div>
 
-                                    <!-- 4.1 Kalibrasi -->
+                                    <!-- kalibrasi -->
                                     <h6 class="fw-bold mt-3" style="color: #1D553E;">4.1 Kalibrasi Timbangan (Sensitivitas Load Cell)</h6>
                                     <p class="small text-muted mb-2">Dilakukan saat uji fungsi berkala atau koreksi deviasi nilai beban. Siapkan beban uji dengan nilai massa terverifikasi (contoh: beban standar <strong>5.0 Kg</strong>).</p>
 
@@ -654,7 +615,7 @@
                                         </div>
                                     </div>
 
-                                    <!-- 4.2 Ubah Harga -->
+                                    <!-- ubah harga -->
                                     <h6 class="fw-bold mt-3" style="color: #1D553E;">4.2 Pembaruan Tarif Harga Sampah</h6>
                                     <ol class="small ps-3 mb-2">
                                         <li>Buka menu <strong>Harga Sampah</strong> pada Pengaturan.</li>
@@ -674,7 +635,7 @@
                                         <small>[Foto: Halaman Ubah Harga Sampah]</small>
                                     </div>
 
-                                    <!-- 4.3 Tanggal dan Waktu -->
+                                    <!-- tanggal & waktu -->
                                     <h6 class="fw-bold mt-3" style="color: #1D553E;">4.3 Konfigurasi Tanggal dan Waktu (RTC)</h6>
                                     <ol class="small ps-3 mb-2">
                                         <li>Buka sub-menu <strong>Tanggal dan Waktu</strong>.</li>
@@ -687,7 +648,7 @@
                                         <small>[Foto: Halaman Tanggal dan Waktu]</small>
                                     </div>
 
-                                    <!-- 4.4 Wi-Fi -->
+                                    <!-- wifi -->
                                     <h6 class="fw-bold mt-3" style="color: #1D553E;">4.4 Konfigurasi Jaringan Wi-Fi</h6>
                                     <ol class="small ps-3 mb-2">
                                         <li><strong>Info Wi-Fi:</strong>
@@ -729,7 +690,7 @@
                                         Driver antarmuka keyboard virtual perangkat hanya menerima karakter <strong>Alfanumerik (A–Z, 0–9)</strong>. Karakter simbol (seperti <code>!</code>, <code>*</code>, <code>#</code>, spasi) tidak didukung. Pastikan SSID dan kata sandi jaringan hanya menggunakan format alfanumerik.
                                     </div>
 
-                                    <!-- 4.5 Sinkronisasi -->
+                                    <!-- sinkronisasi -->
                                     <h6 class="fw-bold mt-3" style="color: #1D553E;">4.5 Sinkronisasi Data Offline ke Server</h6>
                                     <ol class="small ps-3 mb-2">
                                         <li>Buka menu <strong>Pengaturan ➔ Singkronisasi</strong> saat perangkat telah mendapatkan kembali akses Wi-Fi.</li>
@@ -745,7 +706,7 @@
                             </div>
                         </div>
 
-                        <!-- BAB 8 -->
+                        <!-- bab 8 -->
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingDelapan">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDelapan">
@@ -768,7 +729,7 @@
                             </div>
                         </div>
 
-                        <!-- BAB 9 -->
+                        <!-- bab 9 -->
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingSembilan">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSembilan">
@@ -796,7 +757,7 @@
                             </div>
                         </div>
 
-                        <!-- BAB 10 -->
+                        <!-- bab 10 -->
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingSepuluh">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSepuluh">
@@ -860,11 +821,11 @@
                             </div>
                         </div>
 
-                    </div> <!-- END ACCORDION -->
+                    </div>
 
                 </div>
 
-                <!-- FOOTER MODAL -->
+                <!-- footer modal -->
                 <div class="modal-footer bg-white border-top d-flex justify-content-between p-3">
                     <a href="assets/panduan/buku-panduan-kinasih.pdf" download class="btn btn-outline-success btn-sm py-2 px-3 fw-semibold" style="border-radius: 6px; color: #1D553E; border-color: #1D553E;">
                         <i class="bi bi-file-earmark-arrow-down-fill me-1"></i> Unduh File PDF
@@ -878,19 +839,19 @@
         </div>
     </div>
         
-    <!-- FOOTER -->
+    <!-- footer -->
     <footer class="footer">
-    <p>© 2026 KINASIH</p>
-    <p>Dikembangkan oleh Eclipse</p>
+        <p>© 2026 KINASIH</p>
+        <p>Dikembangkan oleh Eclipse</p>
     </footer>
 
-    <!-- Library untuk membuat file Excel -->
+    <!-- library xlsx excel -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
     
-    <!-- Library untuk tombol dan modul bantuan (Bootstrap 5) -->
+    <!-- bootstrap js -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- JavaScript -->
+    <!-- script js -->
     <script src="js/script.js"></script>
-    </body>
+</body>
 </html>

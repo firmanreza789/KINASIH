@@ -19,57 +19,87 @@
     /* Warna putih */
     --white: #FFFFFF;
 }
-
-
-/* BODY */
-
+/* base layout */
 body {
-    /* Menghilangkan margin bawaan browser */
     margin: 0;
-
-    /* Warna background halaman */
     background-color: var(--background);
-
-    /* Warna teks */
     color: var(--text);
-
-    /* Font */
     font-family: Arial, Helvetica, sans-serif;
 }
-
-
-/* HEADER */
-
+/* header & logo */
 .header {
-    /* Warna primary KINASIH */
     background-color: var(--primary);
-
-    /* Memberikan ruang di dalam header */
     padding: 18px 0;
 }
-
-
 .brand {
-    /* Membuat logo dan tulisan berada dalam satu baris */
     display: flex;
-
-    /* Menyelaraskan secara vertikal */
     align-items: center;
-
-    /* Jarak antara logo dan tulisan */
     gap: 12px;
 }
-
-
-/* Tanda wajib diisi */
-
+.logo {
+    width: 50px;
+    height: 50px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 4px;
+    object-fit: contain;
+}
+.brand h1 {
+    margin: 0;
+    color: var(--white);
+    font-size: 22px;
+    font-weight: 700;
+}
+.brand p {
+    margin: 2px 0 0;
+    color: var(--white);
+    font-size: 13px;
+}
+/* konten utama */
+.main-content {
+    padding: 60px 0;
+    min-height: calc(100vh - 150px);
+}
+/* card form */
+.report-card {
+    background-color: var(--white);
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 35px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+.report-card h2 {
+    margin-bottom: 8px;
+    color: var(--primary);
+    font-size: 28px;
+    font-weight: 700;
+}
+.description {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 14px;
+}
+.form-label {
+    font-weight: 600;
+    color: var(--text);
+}
 .required {
     color: #dc3545;
 }
-
-
-/* Pesan error */
-
+/* input form */
+.date-input {
+    min-height: 48px;
+    border: 1px solid #D1D5DB;
+    border-radius: 10px;
+}
+.date-input:focus {
+    border-color: var(--secondary);
+    box-shadow: 0 0 0 3px rgba(97, 146, 68, 0.15);
+}
+.date-input.input-error {
+    border-color: #dc3545;
+}
 .error-message {
     display: none;
     margin-top: 6px;
@@ -77,274 +107,67 @@ body {
     font-size: 14px;
     font-weight: 600;
 }
-
-
-/* Logo */
-
-.logo {
-    width: 50px;
-    height: 50px;
-
-    /* Background putih hanya di sekitar logo */
-    background-color: #ffffff;
-
-    /* Membuat area putih berbentuk kotak dengan sudut membulat */
-    border-radius: 8px;
-
-    /* Jarak logo dengan area putih */
-    padding: 4px;
-
-    /* Supaya gambar tidak gepeng */
-    object-fit: contain;
-}
-
-
-/* Nama KINASIH */
-
-.brand h1 {
-    margin: 0;
-    color: var(--white);
-    font-size: 22px;
-    font-weight: 700;
-}
-
-
-/* Deskripsi di bawah nama */
-
-.brand p {
-    margin: 2px 0 0;
-    color: var(--white);
-    font-size: 13px;
-}
-
-
-/* KONTEN UTAMA */
-
-.main-content {
-    /* Memberikan jarak atas dan bawah */
-    padding: 60px 0;
-
-    /* Minimal tinggi agar footer berada di bawah */
-    min-height: calc(100vh - 150px);
-}
-
-
-/* CARD LAPORAN */
-
-.report-card {
-    /* Warna card */
-    background-color: var(--white);
-
-    /* Membatasi lebar agar tidak terlalu lebar */
-    max-width: 520px;
-
-    /* Membuat card berada di tengah */
-    margin: 0 auto;
-
-    /* Jarak isi card dengan tepi */
-    padding: 35px;
-
-    /* Membuat sudut card sedikit melengkung */
-    border-radius: 16px;
-
-    /* Bayangan tipis */
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-}
-
-
-/* JUDUL */
-
-.report-card h2 {
-    margin-bottom: 8px;
-    color: var(--primary);
-    font-size: 28px;
-    font-weight: 700;
-}
-
-
-/* Deskripsi */
-
-.description {
-    margin: 0;
-    color: var(--text-muted);
-    font-size: 14px;
-}
-
-
-/* LABEL FORM */
-
-.form-label {
-    /* Membuat tulisan label lebih tegas */
-    font-weight: 600;
-    color: var(--text);
-}
-
-
-/* INPUT TANGGAL & FORM */
-
-.date-input {
-    /* Tinggi input agar mudah ditekan di HP */
-    min-height: 48px;
-
-    /* Border menggunakan warna abu-abu */
-    border: 1px solid #D1D5DB;
-
-    border-radius: 10px;
-}
-
-
-/* Ketika input dipilih */
-
-.date-input:focus {
-    border-color: var(--secondary);
-
-    /* Menghilangkan outline bawaan */
-    box-shadow: 0 0 0 3px rgba(97, 146, 68, 0.15);
-}
-
-
-/* Ketika input mengalami error */
-
-.date-input.input-error {
-    border-color: #dc3545;
-}
-
-
-/* TOMBOL EXPORT & AKSI */
-
+/* tombol aksi */
 .btn-export {
-    /* Warna utama tombol */
     background-color: var(--primary);
-
-    /* Warna tulisan */
     color: var(--white);
-
-    /* Tinggi tombol */
     min-height: 50px;
-
-    /* Tulisan lebih tegas */
     font-weight: 600;
-
-    /* Sudut tombol */
     border-radius: 10px;
-
-    /* Menghilangkan border */
     border: none;
     transition: all 0.2s ease-in-out;
 }
-
-
-/* Ketika mouse berada di tombol */
-
 .btn-export:hover {
-    /* Berubah ke warna secondary */
     background-color: var(--secondary);
-
     color: var(--white);
 }
-
-
-/* Ketika tombol ditekan */
-
 .btn-export:active {
     transform: scale(0.98);
 }
-
-
-/* STATUS PESAN */
-
+/* notif status pesan */
 .status-message {
     display: none;
-
-    /* Jarak dari tombol */
     margin-top: 16px;
-
-    /* Jarak isi dengan tepi */
     padding: 12px;
-
     border-radius: 8px;
-
-    /* Posisi teks di tengah */
     text-align: center;
-
     font-size: 14px;
     font-weight: 600;
 }
-
-
-/* Saat proses loading */
-
 .status-loading {
     display: block;
     background-color: #fff3cd;
     color: #856404;
 }
-
-
-/* Saat berhasil */
-
 .status-success {
     display: block;
     background-color: #d1e7dd;
     color: #0f5132;
 }
-
-
-/* Saat gagal */
-
 .status-error {
     display: block;
     background-color: #f8d7da;
     color: #842029;
 }
-
-
-/* CARD CEK SALDO & PENARIKAN SALDO */
-
+/* card cek saldo & penarikan */
 .balance-card {
     margin-top: 30px;
 }
-
-
-/* HASIL SALDO & BUKTI PENARIKAN */
-
 .saldo-result {
     display: none;
-
-    /* Jarak dari tombol */
     margin-top: 20px;
-
-    /* Jarak isi dengan tepi */
     padding: 20px;
-
-    /* Background hasil */
     background-color: var(--background);
-
-    /* Sudut hasil */
     border-radius: 10px;
 }
-
-
-/* FOOTER */
-
+/* footer */
 .footer {
-    /* Posisi teks di tengah */
     text-align: center;
-
-    /* Jarak footer */
     padding: 20px;
-
-    /* Warna teks */
     color: var(--text-muted);
-
     font-size: 13px;
 }
-
-
-/* ========================================== */
-/* TOMBOL BANTUAN MELAYANG (FLOATING BUTTON)  */
-/* ========================================== */
-
+/* floating button bantuan */
 .btn-floating-bantuan {
     position: fixed;
     bottom: 25px;
@@ -364,24 +187,16 @@ body {
     gap: 8px;
     transition: all 0.2s ease-in-out;
 }
-
 .btn-floating-bantuan:hover {
     background-color: var(--secondary);
     color: #ffffff;
     transform: translateY(-3px);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
-
 .btn-floating-bantuan:active {
     transform: scale(0.95);
 }
-
-
-/* ========================================== */
-/* STYLING BUKU PANDUAN TIMBANGAN (ACCORDION) */
-/* ========================================== */
-
-/* Tombol judul Bab Accordion */
+/* accordion panduan timbangan */
 .accordion-panduan .accordion-button {
     font-weight: 600;
     font-size: 0.95rem;
@@ -392,19 +207,13 @@ body {
     box-shadow: none;
     border: none;
 }
-
-/* Saat Bab Accordion dibuka */
 .accordion-panduan .accordion-button:not(.collapsed) {
     color: #ffffff;
     background-color: var(--primary);
 }
-
-/* Ikon panah accordion saat terbuka menjadi putih */
 .accordion-panduan .accordion-button:not(.collapsed)::after {
     filter: brightness(0) invert(1);
 }
-
-/* Kotak setiap item bab */
 .accordion-panduan .accordion-item {
     border: 1px solid #e0e6e2;
     border-radius: 10px !important;
@@ -412,16 +221,13 @@ body {
     overflow: hidden;
     background-color: #ffffff;
 }
-
-/* Isi dari bab */
 .accordion-panduan .accordion-body {
     background-color: #fafcfb;
     font-size: 0.92rem;
     line-height: 1.6;
     color: #374151;
 }
-
-/* Kotak Wadah Gambar di Panduan */
+/* wadah foto panduan */
 .panduan-img-box {
     background-color: #f1f5f2;
     border: 1.5px dashed #a3c4b0;
@@ -430,18 +236,16 @@ body {
     text-align: center;
     margin: 14px 0;
 }
-
 .panduan-img-box img {
     max-width: 100%;
-    height: auto; /* Mengikuti tinggi asli foto agar tidak terpotong */
-    max-height: 420px; /* Batas tinggi maksimal di layar PC */
-    object-fit: contain; /* Menampilkan seluruh isi foto tanpa di-crop */
+    height: auto;
+    max-height: 420px;
+    object-fit: contain;
     border-radius: 8px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
     display: block;
-    margin: 0 auto; /* Supaya foto berada tepat di tengah */
+    margin: 0 auto;
 }
-
 .panduan-img-box small {
     display: block;
     margin-top: 6px;
@@ -449,85 +253,60 @@ body {
     font-weight: 500;
     font-size: 0.78rem;
 }
-
-
-/* ================================================= */
-/* STYLING KHUSUS INPUT TOKEN 6 DIGIT PENARIKAN     */
-/* ================================================= */
-
+/* style kotak input token 6 digit */
 #tarikToken {
     font-family: 'Courier New', Courier, monospace;
-    letter-spacing: 6px; /* Memberi jarak renggang antar angka */
+    letter-spacing: 6px;
     font-size: 1.35rem;
     font-weight: 700;
     color: var(--primary);
     background-color: #f7faf8;
     border: 1.5px solid #a3c4b0;
 }
-
 #tarikToken:focus {
     background-color: #ffffff;
     border-color: var(--primary);
     box-shadow: 0 0 0 3px rgba(29, 85, 62, 0.15);
 }
-
 #tarikToken::placeholder {
     letter-spacing: 2px;
     font-size: 0.95rem;
     font-weight: 400;
     color: #9ca3af;
 }
-
-
-/* RESPONSIVE UNTUK HP */
-
+/* responsive mobile */
 @media (max-width: 576px) {
-    /* Mengurangi padding konten pada layar kecil */
     .main-content {
         padding: 35px 15px;
     }
-
-    /* Mengurangi ukuran card */
     .report-card {
         padding: 25px 20px;
         border-radius: 14px;
     }
-
-    /* Ukuran judul di HP */
     .report-card h2 {
         font-size: 24px;
     }
-
-    /* Logo sedikit lebih kecil */
     .logo {
         width: 44px;
         height: 44px;
     }
-
-    /* Nama KINASIH */
     .brand h1 {
         font-size: 20px;
     }
-
-    /* Tombol bantuan di HP agar pas */
     .btn-floating-bantuan {
         bottom: 15px;
         right: 15px;
         padding: 10px 16px;
         font-size: 0.88rem;
     }
-
     .accordion-panduan .accordion-button {
         font-size: 0.88rem;
         padding: 12px 14px;
     }
-
     .accordion-panduan .accordion-body {
         font-size: 0.85rem;
         padding: 12px;
     }
-
-    /* Token input di layar HP */
     #tarikToken {
         letter-spacing: 4px;
         font-size: 1.2rem;
