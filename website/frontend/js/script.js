@@ -36,10 +36,71 @@ const formatRupiah = (angka) => {
     }).format(angka || 0);
 };
 
+// fungsi bantu format tanggal lokal
+const getLocalDateString = (dateVal) => {
+    if (!dateVal) return "";
+    const d = new Date(dateVal);
+    if (isNaN(d.getTime())) return "";
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+};
 
-// ----------------------------------------------------
-// 1. EXPORT LAPORAN KE EXCEL
-// ----------------------------------------------------
+// pembersih pesan error otomatis saat user mulai mengetik / memilih tanggal
+const resetErrorTanggal = () => {
+    errorMulai.style.display = "none";
+    errorAkhir.style.display = "none";
+    errorTanggal.style.display = "none";
+    status.innerHTML = "";
+    tanggalMulai.classList.remove("input-error");
+    tanggalAkhir.classList.remove("input-error");
+};
+if (tanggalMulai) {
+    tanggalMulai.addEventListener("input", resetErrorTanggal);
+    tanggalMulai.addEventListener("change", resetErrorTanggal);
+}
+if (tanggalAkhir) {
+    tanggalAkhir.addEventListener("input", resetErrorTanggal);
+    tanggalAkhir.addEventListener("change", resetErrorTanggal);
+}
+
+if (noKK) {
+    noKK.addEventListener("input", function () {
+        errorKK.style.display = "none";
+        noKK.classList.remove("input-error");
+        saldoResult.style.display = "none";
+        saldoResult.innerHTML = "";
+    });
+}
+
+if (tarikNoKK) {
+    tarikNoKK.addEventListener("input", function () {
+        errorTarikKK.style.display = "none";
+        tarikNoKK.classList.remove("input-error");
+        tarikResult.style.display = "none";
+        tarikResult.innerHTML = "";
+    });
+}
+if (tarikToken) {
+    tarikToken.addEventListener("input", function () {
+        errorTarikToken.style.display = "none";
+        tarikToken.classList.remove("input-error");
+        tarikResult.style.display = "none";
+        tarikResult.innerHTML = "";
+    });
+}
+if (tarikNominal) {
+    tarikNominal.addEventListener("input", function () {
+        errorTarikNominal.style.display = "none";
+        tarikNominal.classList.remove("input-error");
+        tarikResult.style.display = "none";
+        tarikResult.innerHTML = "";
+    });
+}
+
+
+// 1. export laporan ke excel
 btnExport.addEventListener("click", async function () {
     const mulai = tanggalMulai.value;
     const akhir = tanggalAkhir.value;
@@ -64,12 +125,16 @@ btnExport.addEventListener("click", async function () {
         tanggalAkhir.classList.remove("input-error");
     }
 
-    if (!valid) return;
+    if (!valid) {
+        status.innerHTML = "";
+        return;
+    }
 
     if (mulai > akhir) {
         errorTanggal.style.display = "block";
         tanggalMulai.classList.add("input-error");
         tanggalAkhir.classList.add("input-error");
+        status.innerHTML = "";
         return;
     }
 
@@ -124,7 +189,7 @@ btnExport.addEventListener("click", async function () {
 
         // filter transaksi sesuai tanggal yang dipilih
         const transaksiFilter = resultTransaksi.data.filter(function (item) {
-            const tgl = (item.tanggal_waktu || item.tanggal || "").substring(0, 10);
+            const tgl = getLocalDateString(item.tanggal_waktu || item.tanggal);
             return tgl >= mulai && tgl <= akhir;
         });
 
@@ -134,9 +199,14 @@ btnExport.addEventListener("click", async function () {
             return;
         }
 
-        // kumpulin total uang ditarik per no kk
+        // kumpulin total uang ditarik per no kk sesuai periode tanggal
         const mapPenarikanKK = {};
         dataPenarikan.forEach(function (p) {
+            const tglP = getLocalDateString(p.tanggal || p.created_at || p.tanggal_penarikan || p.createdAt);
+            if (tglP && (tglP < mulai || tglP > akhir)) {
+                return;
+            }
+
             const noKKP = p.no_kk || p.noKK || p.nasabah?.noKK || p.nasabah?.no_kk;
             const jumlahP = Number(p.jumlahPenarikan || p.jumlah_penarikan || p.jumlah || 0);
             if (noKKP) {
@@ -191,20 +261,27 @@ btnExport.addEventListener("click", async function () {
             // cari total uang ditarik si nasabah
             let totalPenarikanNasabah = mapPenarikanKK[nasabah.noKK] || 0;
 
+            // cari data saldo nasabah di database
+            const nasabahObj = dataNasabah.find(n => String(n.noKK || n.no_kk).trim() === String(nasabah.noKK).trim());
+            const saldoSaatIni = nasabahObj && nasabahObj.saldo !== undefined ? Number(nasabahObj.saldo) : null;
+
             // jaga-jaga kalau api penarikan backend belum jalan, hitung dari selisih saldo
             const totalSetoranSemua = nasabah.items.reduce((s, itm) => s + itm.setoranMasuk, 0);
-            if (totalPenarikanNasabah === 0 && dataNasabah.length > 0) {
-                const nasabahObj = dataNasabah.find(n => String(n.noKK).trim() === String(nasabah.noKK).trim());
-                if (nasabahObj && nasabahObj.saldo !== undefined) {
-                    const saldoSekarang = Number(nasabahObj.saldo);
-                    if (saldoSekarang < totalSetoranSemua) {
-                        totalPenarikanNasabah = totalSetoranSemua - saldoSekarang;
-                    }
+            if (totalPenarikanNasabah === 0 && saldoSaatIni !== null) {
+                if (saldoSaatIni < totalSetoranSemua) {
+                    totalPenarikanNasabah = totalSetoranSemua - saldoSaatIni;
                 }
             }
 
+            // hitung saldo awal sebelum periode ini biar gak minus / 0 kalau ada penarikan besar
+            let saldoAwal = 0;
+            if (saldoSaatIni !== null) {
+                const estimasiAwal = saldoSaatIni - totalSetoranSemua + totalPenarikanNasabah;
+                saldoAwal = Math.max(0, estimasiAwal);
+            }
+
             let sisaPenarikan = totalPenarikanNasabah;
-            let saldoBerjalan = 0;
+            let saldoBerjalan = saldoAwal;
 
             nasabah.items.forEach(function (item, idx) {
                 // potong penarikan di baris pertama
@@ -281,16 +358,17 @@ btnExport.addEventListener("click", async function () {
 });
 
 
-// ----------------------------------------------------
-// 2. CEK SALDO WARGA
-// ----------------------------------------------------
+// 2. cek saldo warga
 btnCekSaldo.addEventListener("click", async function () {
-    const nomorKK = noKK.value.trim();
+    // hapus semua spasi di no kk (termasuk spasi di tengah)
+    const nomorKK = noKK.value.replace(/\s+/g, "");
 
     if (!nomorKK) {
         errorKK.innerHTML = `<i class="bi bi-exclamation-circle me-1"></i> Wajib diisi`;
         errorKK.style.display = "block";
         noKK.classList.add("input-error");
+        saldoResult.style.display = "none";
+        saldoResult.innerHTML = "";
         return;
     }
 
@@ -298,6 +376,8 @@ btnCekSaldo.addEventListener("click", async function () {
         errorKK.innerHTML = `<i class="bi bi-exclamation-circle me-1"></i> Nomor KK harus 16 digit angka`;
         errorKK.style.display = "block";
         noKK.classList.add("input-error");
+        saldoResult.style.display = "none";
+        saldoResult.innerHTML = "";
         return;
     }
 
@@ -318,7 +398,7 @@ btnCekSaldo.addEventListener("click", async function () {
         }
 
         const nasabah = result.data.find(function (item) {
-            return String(item.noKK).trim() === nomorKK;
+            return String(item.noKK || item.no_kk).trim() === nomorKK;
         });
 
         if (!nasabah) {
@@ -346,13 +426,12 @@ btnCekSaldo.addEventListener("click", async function () {
 });
 
 
-// ----------------------------------------------------
-// 3. PENARIKAN SALDO KASIR
-// ----------------------------------------------------
+// 3. penarikan saldo kasir
 if (btnTarikSaldo) {
     btnTarikSaldo.addEventListener("click", async function () {
-        const noKKVal = (tarikNoKK ? tarikNoKK.value : "").trim();
-        const tokenVal = (tarikToken ? tarikToken.value : "").trim();
+        // bersihkan spasi di no kk dan token
+        const noKKVal = (tarikNoKK ? tarikNoKK.value : "").replace(/\s+/g, "");
+        const tokenVal = (tarikToken ? tarikToken.value : "").replace(/\s+/g, "");
         const nominalVal = Number(tarikNominal ? tarikNominal.value : 0);
         let valid = true;
 
@@ -399,7 +478,12 @@ if (btnTarikSaldo) {
             tarikNominal.classList.remove("input-error");
         }
 
-        if (!valid) return;
+        if (!valid) {
+            // sembunyikan hasil struk lama jika form error
+            tarikResult.style.display = "none";
+            tarikResult.innerHTML = "";
+            return;
+        }
 
         tarikResult.style.display = "block";
         tarikResult.className = "saldo-result status-loading text-center p-3 mt-3";
@@ -416,11 +500,16 @@ if (btnTarikSaldo) {
             }
 
             const nasabah = dataNasabah.data.find(function (item) {
-                return String(item.noKK).trim() === noKKVal;
+                return String(item.noKK || item.no_kk).trim() === noKKVal;
             });
 
             if (!nasabah) {
                 throw new Error("Nomor KK tidak terdaftar dalam sistem.");
+            }
+
+            const idNasabahFix = nasabah.id_nasabah || nasabah.idNasabah || nasabah.id;
+            if (!idNasabahFix) {
+                throw new Error("ID nasabah tidak ditemukan pada database.");
             }
 
             if (nominalVal > Number(nasabah.saldo)) {
@@ -430,7 +519,7 @@ if (btnTarikSaldo) {
             // kirim approve ke backend
             const payload = {
                 device_id: "ESP32-KINASIH-01",
-                id_nasabah: nasabah.idNasabah,
+                id_nasabah: idNasabahFix,
                 token: tokenVal,
                 jumlah_penarikan: nominalVal,
                 keterangan: "Penarikan tunai pos"
@@ -448,7 +537,7 @@ if (btnTarikSaldo) {
             }
 
             // tampilkan hasil penarikan sukses
-            const saldoSisa = approveResult.data?.saldo_sesudah ?? (nasabah.saldo - nominalVal);
+            const saldoSisa = approveResult.data?.saldo_sesudah ?? (Number(nasabah.saldo) - nominalVal);
 
             tarikResult.className = "saldo-result status-success mt-3 p-3 border rounded bg-light text-start";
             tarikResult.innerHTML = `
