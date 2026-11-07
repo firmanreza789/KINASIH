@@ -842,8 +842,131 @@
     <!-- footer -->
     <footer class="footer">
         <p>© 2026 KINASIH</p>
-        <p>Dikembangkan oleh Eclipse</p>
+        <p>
+            Dikembangkan oleh 
+            <a href="#" data-bs-toggle="modal" data-bs-target="#tentangPengembang" class="footer-dev-link">Eclipse Team</a>
+        </p>
     </footer>
+
+    <!-- modal tentang pengembang (eclipse team) -->
+    <div class="modal fade" id="tentangPengembang" tabindex="-1" aria-labelledby="judulPengembang" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+            <div class="modal-content kinasih-box-content">
+                
+                <!-- header modal -->
+                <div class="modal-header py-3 kinasih-box-header">
+                    <div>
+                        <h5 class="modal-title fw-bold mb-0 fs-6 text-white" id="judulPengembang">
+                            <i class="bi bi-people-fill me-2"></i>Tentang Pengembang — Eclipse Team
+                        </h5>
+                        <small class="kinasih-box-subtitle text-white">Profil Pengembang Sistem & Perangkat SmartScale Kinasih</small>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                </div>
+
+                <!-- isi modal -->
+                <div class="modal-body p-3 p-md-4 kinasih-box-body">
+                    
+                    <!-- profil & logo eclipse team -->
+                    <div class="text-center mb-4 p-3 bg-white rounded-3 border">
+                        <img src="assets/logo-eclipse.png" 
+                             alt="Logo Eclipse Team" 
+                             class="dev-team-logo rounded-circle shadow-sm mb-2 img-fallback" 
+                             data-fallback="https://placehold.co/100x100/1D553E/white?text=ECLIPSE">
+                        <h5 class="fw-bold mb-1 text-kinasih">ECLIPSE TEAM</h5>
+                        <p class="text-muted small mb-0">
+                            Tim Rancang Bangun Perangkat Keras (IoT) & Sistem Informasi Manajemen Bank Sampah KINASIH
+                        </p>
+                    </div>
+
+                    <!-- susunan tim pengembang -->
+                    <h6 class="fw-bold mb-2 text-kinasih">
+                        <i class="bi bi-person-badge me-1"></i> Susunan Tim Pengembang:
+                    </h6>
+                    <div class="row g-2 mb-4">
+                        
+                        <!-- Anggota 1 -->
+                        <div class="col-12 col-sm-6">
+                            <div class="dev-member-card p-3 bg-white rounded-3 border d-flex align-items-center gap-3">
+                                <i class="bi bi-person-circle fs-2 text-kinasih"></i>
+                                <div class="lh-sm">
+                                    <div class="dev-member-name fw-bold text-dark">[Nama Ketua Tim]</div>
+                                    <small class="dev-member-role text-muted">Project Lead / IoT Engineer</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Anggota 2 -->
+                        <div class="col-12 col-sm-6">
+                            <div class="dev-member-card p-3 bg-white rounded-3 border d-flex align-items-center gap-3">
+                                <i class="bi bi-person-circle fs-2 text-kinasih"></i>
+                                <div class="lh-sm">
+                                    <div class="dev-member-name fw-bold text-dark">Febrian Eka Putra</div>
+                                    <small class="dev-member-role text-muted">Web & Fullstack Developer</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Anggota 3 -->
+                        <div class="col-12 col-sm-6">
+                            <div class="dev-member-card p-3 bg-white rounded-3 border d-flex align-items-center gap-3">
+                                <i class="bi bi-person-circle fs-2 text-kinasih"></i>
+                                <div class="lh-sm">
+                                    <div class="dev-member-name fw-bold text-dark">[Nama Anggota 3]</div>
+                                    <small class="dev-member-role text-muted">Hardware & Mechanical</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Anggota 4 -->
+                        <div class="col-12 col-sm-6">
+                            <div class="dev-member-card p-3 bg-white rounded-3 border d-flex align-items-center gap-3">
+                                <i class="bi bi-person-circle fs-2 text-kinasih"></i>
+                                <div class="lh-sm">
+                                    <div class="dev-member-name fw-bold text-dark">[Nama Anggota 4]</div>
+                                    <small class="dev-member-role text-muted">UI/UX & Dokumentasi Teknis</small>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- foto layar tentang di timbangan -->
+                    <h6 class="fw-bold mb-2 text-kinasih">
+                        <i class="bi bi-cpu me-1"></i> Tampilan Menu Tentang pada Timbangan:
+                    </h6>
+                    <div class="panduan-img-box mb-3">
+                        <img src="assets/menu5-tentang/menu-tentang.jpeg" 
+                             class="img-fallback"
+                             data-fallback="https://placehold.co/600x240/1D553E/white?text=Foto+Menu+Tentang+Timbangan"
+                             alt="Menu Tentang di Timbangan">
+                        <small>[Foto: Tampilan Menu Tentang pada Perangkat SmartScale Kinasih]</small>
+                    </div>
+
+                    <!-- spesifikasi & informasi sistem -->
+                    <div class="p-3 rounded-2 box-kinasih-soft">
+                        <div class="fw-bold mb-2 text-kinasih dev-system-title">
+                            <i class="bi bi-info-circle-fill me-1"></i> Informasi Sistem & Perangkat
+                        </div>
+                        <ul class="list-unstyled small mb-0 text-secondary dev-system-list">
+                            <li><strong>Nama Perangkat:</strong> SmartScale Kinasih (Dual Display System)</li>
+                            <li><strong>Sistem Web:</strong> Portal Layanan & Laporan Bank Sampah KINASIH</li>
+                            <li><strong>Pengembang:</strong> Eclipse Team — Tim KKN Tematik (2026)</li>
+                        </ul>
+                    </div>
+
+                </div>
+
+                <!-- footer modal -->
+                <div class="modal-footer bg-white border-top d-flex justify-content-end p-3">
+                    <button type="button" class="btn btn-secondary btn-sm py-2 px-4 btn-tutup-box" data-bs-dismiss="modal">
+                        Tutup
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
 
     <!-- library xlsx excel -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
