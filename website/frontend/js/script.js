@@ -27,6 +27,10 @@ const errorTarikToken = document.getElementById("errorTarikToken");
 const errorTarikNominal = document.getElementById("errorTarikNominal");
 const tarikResult = document.getElementById("tarikResult");
 
+// elemen modal tentang pengembang (eclipse team)
+const btnBukaPengembang = document.getElementById("btnBukaPengembang");
+const elModalPengembang = document.getElementById("modalTentangPengembang");
+
 // fungsi bantu format rupiah
 const formatRupiah = (angka) => {
     return new Intl.NumberFormat("id-ID", {
@@ -570,3 +574,25 @@ if (btnTarikSaldo) {
         }
     });
 }
+
+
+// tentang pengembang (eclipse team) & gambar fallback
+if (btnBukaPengembang && elModalPengembang) {
+    const modalPengembang = new bootstrap.Modal(elModalPengembang);
+
+    btnBukaPengembang.addEventListener("click", function (e) {
+        e.preventDefault();
+        modalPengembang.show();
+    });
+}
+
+// ganti otomatis gambar jika file di folder assets belum tersedia
+const fallbackImages = document.querySelectorAll(".img-fallback");
+fallbackImages.forEach(function (img) {
+    img.addEventListener("error", function () {
+        const fallbackUrl = this.getAttribute("data-fallback");
+        if (fallbackUrl && this.src !== fallbackUrl) {
+            this.src = fallbackUrl;
+        }
+    });
+});

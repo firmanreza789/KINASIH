@@ -1,5 +1,4 @@
 /* WARNA UTAMA KINASIH */
-
 :root {
     /* Warna primary dari desain */
     --primary: #1D553E;
@@ -19,6 +18,7 @@
     /* Warna putih */
     --white: #FFFFFF;
 }
+
 /* base layout */
 body {
     margin: 0;
@@ -26,6 +26,7 @@ body {
     color: var(--text);
     font-family: Arial, Helvetica, sans-serif;
 }
+
 /* header & logo */
 .header {
     background-color: var(--primary);
@@ -39,7 +40,7 @@ body {
 .logo {
     width: 50px;
     height: 50px;
-    background-color: #ffffff;
+    background-color: var(--white);
     border-radius: 8px;
     padding: 4px;
     object-fit: contain;
@@ -55,11 +56,13 @@ body {
     color: var(--white);
     font-size: 13px;
 }
+
 /* konten utama */
 .main-content {
     padding: 60px 0;
     min-height: calc(100vh - 150px);
 }
+
 /* card form */
 .report-card {
     background-color: var(--white);
@@ -87,6 +90,7 @@ body {
 .required {
     color: #dc3545;
 }
+
 /* input form */
 .date-input {
     min-height: 48px;
@@ -107,6 +111,7 @@ body {
     font-size: 14px;
     font-weight: 600;
 }
+
 /* tombol aksi */
 .btn-export {
     background-color: var(--primary);
@@ -124,6 +129,7 @@ body {
 .btn-export:active {
     transform: scale(0.98);
 }
+
 /* notif status pesan */
 .status-message {
     display: none;
@@ -149,6 +155,7 @@ body {
     background-color: #f8d7da;
     color: #842029;
 }
+
 /* card cek saldo & penarikan */
 .balance-card {
     margin-top: 30px;
@@ -160,21 +167,36 @@ body {
     background-color: var(--background);
     border-radius: 10px;
 }
-/* footer */
+
+/* footer & link eclipse team */
 .footer {
     text-align: center;
     padding: 20px;
     color: var(--text-muted);
     font-size: 13px;
 }
+.footer p {
+    margin: 4px 0;
+}
+.footer-dev-link {
+    color: var(--primary);
+    font-weight: 700;
+    text-decoration: underline;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+.footer-dev-link:hover {
+    color: var(--secondary);
+}
+
 /* floating button bantuan */
 .btn-floating-bantuan {
     position: fixed;
     bottom: 25px;
     right: 25px;
     background-color: var(--primary);
-    color: #ffffff;
-    border: 2px solid #ffffff;
+    color: var(--white);
+    border: 2px solid var(--white);
     border-radius: 50px;
     padding: 12px 20px;
     font-size: 0.95rem;
@@ -189,26 +211,56 @@ body {
 }
 .btn-floating-bantuan:hover {
     background-color: var(--secondary);
-    color: #ffffff;
+    color: var(--white);
     transform: translateY(-3px);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 .btn-floating-bantuan:active {
     transform: scale(0.95);
 }
+
+/* komponen kotak dialog kinasih */
+.text-kinasih {
+    color: var(--primary);
+}
+.kinasih-box-content {
+    border-radius: 12px;
+    overflow: hidden;
+    border: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+.kinasih-box-header {
+    background-color: var(--primary);
+    color: var(--white);
+}
+.kinasih-box-subtitle {
+    opacity: 0.85;
+    font-size: 0.78rem;
+}
+.kinasih-box-body {
+    background-color: #f9fafb;
+}
+.box-kinasih-soft {
+    background-color: #eef7f2;
+    border: 1px solid #c2e2d0;
+}
+.btn-tutup-box {
+    border-radius: 6px;
+}
+
 /* accordion panduan timbangan */
 .accordion-panduan .accordion-button {
     font-weight: 600;
     font-size: 0.95rem;
     color: var(--primary);
-    background-color: #ffffff;
+    background-color: var(--white);
     border-radius: 10px !important;
     padding: 14px 16px;
     box-shadow: none;
     border: none;
 }
 .accordion-panduan .accordion-button:not(.collapsed) {
-    color: #ffffff;
+    color: var(--white);
     background-color: var(--primary);
 }
 .accordion-panduan .accordion-button:not(.collapsed)::after {
@@ -219,7 +271,7 @@ body {
     border-radius: 10px !important;
     margin-bottom: 10px;
     overflow: hidden;
-    background-color: #ffffff;
+    background-color: var(--white);
 }
 .accordion-panduan .accordion-body {
     background-color: #fafcfb;
@@ -227,7 +279,8 @@ body {
     line-height: 1.6;
     color: #374151;
 }
-/* wadah foto panduan */
+
+/* wadah foto panduan & pengembang */
 .panduan-img-box {
     background-color: #f1f5f2;
     border: 1.5px dashed #a3c4b0;
@@ -253,6 +306,35 @@ body {
     font-weight: 500;
     font-size: 0.78rem;
 }
+
+/* komponen tentang pengembang (eclipse team) */
+.dev-team-logo {
+    width: 90px;
+    height: 90px;
+    object-fit: cover;
+    border: 3px solid #eef7f2;
+}
+.dev-member-card {
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+.dev-member-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+    border-color: #c2e2d0 !important;
+}
+.dev-member-name {
+    font-size: 0.9rem;
+}
+.dev-member-role {
+    font-size: 0.78rem;
+}
+.dev-system-title {
+    font-size: 0.88rem;
+}
+.dev-system-list {
+    line-height: 1.7;
+}
+
 /* style kotak input token 6 digit */
 #tarikToken {
     font-family: 'Courier New', Courier, monospace;
@@ -264,7 +346,7 @@ body {
     border: 1.5px solid #a3c4b0;
 }
 #tarikToken:focus {
-    background-color: #ffffff;
+    background-color: var(--white);
     border-color: var(--primary);
     box-shadow: 0 0 0 3px rgba(29, 85, 62, 0.15);
 }
@@ -274,6 +356,7 @@ body {
     font-weight: 400;
     color: #9ca3af;
 }
+
 /* responsive mobile */
 @media (max-width: 576px) {
     .main-content {
@@ -310,5 +393,15 @@ body {
     #tarikToken {
         letter-spacing: 4px;
         font-size: 1.2rem;
+    }
+    .dev-team-logo {
+        width: 75px;
+        height: 75px;
+    }
+    .dev-member-name {
+        font-size: 0.85rem;
+    }
+    .dev-member-role {
+        font-size: 0.74rem;
     }
 }
