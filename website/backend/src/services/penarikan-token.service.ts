@@ -160,6 +160,14 @@ export async function approvePenarikanToken(data: {
   }
 
   return prisma.$transaction(async (tx) => {
+
+     // DEBUG: Periksa data yang dikirim web
+    console.log("DATA APPROVE:", {
+      device_id,
+      id_nasabah,
+      token,
+      waktu_server: new Date().toISOString(),
+    });
     // Cari dan kunci sesi agar tidak disetujui dua kali
     const sessions = await tx.$queryRaw<
       { idSession: number }[]
