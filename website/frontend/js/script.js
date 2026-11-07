@@ -522,7 +522,7 @@ if (btnTarikSaldo) {
 
             // kirim approve ke backend
             const payload = {
-                device_id: "ESP32-KINASIH-01",
+                device_id: "ESP32S3-KINASIH-01",
                 id_nasabah: idNasabahFix,
                 token: tokenVal,
                 jumlah_penarikan: nominalVal,
