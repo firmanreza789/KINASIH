@@ -311,7 +311,7 @@ body {
         letter-spacing: 4px;
         font-size: 1.2rem;
     }
-    .kinasih-box-content {
+    .kinasih-box-content {}
     border-radius: 12px;
     overflow: hidden;
     border: none;
@@ -386,5 +386,23 @@ body {
     }
     .dev-member-role {
         font-size: 0.74rem;
+    }
+}
+/* Styling Khusus Logo Eclipse Team */
+.dev-team-logo {
+    width: 85px !important;
+    height: 85px !important;
+    object-fit: cover !important;
+    border-radius: 50% !important;
+    border: 3px solid #eef7f2;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    display: inline-block;
+}
+
+/* Responsif: sedikit lebih ramping jika dibuka di HP */
+@media (max-width: 576px) {
+    .dev-team-logo {
+        width: 70px !important;
+        height: 70px !important;
     }
 }

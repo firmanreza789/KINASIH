@@ -840,13 +840,17 @@
     </div>
         
     <!-- footer -->
-    <footer class="footer">
-        <p>© 2026 KINASIH</p>
-        <p>
-            Dikembangkan oleh 
-            <a href="#" data-bs-toggle="modal" data-bs-target="#tentangPengembang" class="footer-dev-link">Eclipse Team</a>
-        </p>
-    </footer>
+    <footer class="text-center py-4">
+    <p class="text-muted small mb-2">© 2026 KINASIH</p>
+    
+    <!-- Tombol Murni Bootstrap 5 -->
+    <button type="button" 
+            class="btn btn-sm btn-outline-success rounded-pill px-3 py-2 shadow-sm"
+            data-bs-toggle="modal" 
+            data-bs-target="#tentangPengembang">
+        <i class="bi bi-people-fill me-1"></i> Eclipse Team
+    </button>
+</footer>
 
     <!-- tentang pengembang (eclipse team) -->
     <div class="modal fade" id="tentangPengembang" tabindex="-1" aria-labelledby="judulPengembang" aria-hidden="true">
@@ -870,9 +874,9 @@
                     <!-- profil & logo eclipse team -->
                     <div class="text-center mb-4 p-3 bg-white rounded-3 border">
                         <img src="assets/logo-eclipse.png" 
-                             alt="Logo Eclipse Team" 
-                             class="dev-team-logo rounded-circle shadow-sm mb-2 img-fallback" 
-                             data-fallback="https://placehold.co/100x100/1D553E/white?text=ECLIPSE">
+                        alt="Logo Eclipse Team" 
+                        class="dev-team-logo mb-2" 
+                        onerror="this.src='https://placehold.co/85x85/1D553E/white?text=ECLIPSE'">
                         <h5 class="fw-bold mb-1 text-kinasih">ECLIPSE TEAM</h5>
                         <p class="text-muted small mb-0">
                             Tim Rancang Bangun Perangkat Keras (IoT) & Sistem Informasi Manajemen Bank Sampah KINASIH
@@ -902,7 +906,7 @@
                                 <i class="bi bi-person-circle fs-2 text-kinasih"></i>
                                 <div class="lh-sm">
                                     <div class="dev-member-name fw-bold text-dark">Firman Reza Alamzah</div>
-                                    <small class="dev-member-role text-muted">FrontEnd Developer</small>
+                                    <small class="dev-member-role text-muted">Frontend Developer</small>
                                 </div>
                             </div>
                         </div>
