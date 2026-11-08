@@ -205,7 +205,7 @@ body {
     border-radius: 10px !important;
     padding: 14px 16px;
     box-shadow: none;
-   border: none;
+    border: none;
 }
 .accordion-panduan .accordion-button:not(.collapsed) {
     color: #ffffff;
