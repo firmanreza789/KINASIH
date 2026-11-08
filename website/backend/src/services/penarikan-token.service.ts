@@ -168,7 +168,8 @@ export async function approvePenarikanToken(data: {
       token,
       waktu_server: new Date().toISOString(),
     });
-    // Cari dan kunci sesi agar tidak disetujui dua kali
+        // Cari dan kunci sesi agar tidak disetujui dua kali
+    const now = new Date();
     const sessions = await tx.$queryRaw<
       { idSession: number }[]
     >`
@@ -178,7 +179,7 @@ export async function approvePenarikanToken(data: {
         AND "id_nasabah" = ${id_nasabah}
         AND "token" = ${token}
         AND "status" = 'WAITING'
-        AND "expires_at" > (NOW() AT TIME ZONE 'UTC')
+        AND "expires_at" > ${now}
       ORDER BY "created_at" DESC
       LIMIT 1
       FOR UPDATE
