@@ -1,9 +1,12 @@
 <!doctype html>
 <html lang="id">
 <head>
+    <!-- meta & konfigurasi halaman -->
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Laporan Timbangan - KINASIH</title>
+
+    <!-- favicon logo kinasih -->
     <link rel="icon" type="image/png" href="assets/logokinasih.png">
 
     <!-- bootstrap & icons -->
@@ -18,6 +21,7 @@
     <!-- header -->
     <header class="header">
         <div class="container">
+            <!-- identitas brand & logo -->
             <div class="brand">
                 <img src="assets/logokinasih.png" alt="Logo KINASIH" class="logo" />
                 <div>
@@ -34,6 +38,7 @@
 
             <!-- card 1: export laporan -->
             <div class="report-card">
+                <!-- judul & deskripsi export laporan -->
                 <div class="text-center mb-4">
                     <h2><i class="bi bi-file-earmark-spreadsheet text-success me-2"></i>Laporan Timbangan</h2>
                     <p class="description">Pilih periode untuk mengunduh laporan.</p>
@@ -61,6 +66,7 @@
                     </div>
                 </div>
 
+                <!-- pesan error validasi urutan tanggal -->
                 <div id="errorTanggal" class="error-message">
                     <i class="bi bi-exclamation-triangle me-1"></i> Tanggal mulai tidak boleh setelah tanggal akhir.
                 </div>
@@ -76,6 +82,7 @@
 
             <!-- card 2: cek saldo warga -->
             <div class="report-card balance-card">
+                <!-- judul & deskripsi cek saldo -->
                 <div class="text-center mb-4">
                     <h2><i class="bi bi-wallet2 text-success me-2"></i>Cek Saldo Warga</h2>
                     <p class="description">
@@ -112,6 +119,7 @@
 
             <!-- card 3: penarikan saldo -->
             <div class="report-card balance-card">
+                <!-- judul & deskripsi penarikan saldo -->
                 <div class="text-center mb-4">
                     <h2><i class="bi bi-cash-stack text-success me-2"></i>Penarikan Saldo</h2>
                     <p class="description">
@@ -233,8 +241,10 @@
                             </h2>
                             <div id="collapseSatu" class="accordion-collapse collapse show" data-bs-parent="#accordionPanduan">
                                 <div class="accordion-body">
+                                    <!-- deskripsi umum alat -->
                                     <p>SmartScale Kinasih merupakan perangkat timbangan digital terintegrasi untuk otomatisasi pencatatan setoran sampah, kalkulasi saldo, dan sinkronisasi data nasabah tanpa pembukuan manual.</p>
 
+                                    <!-- daftar fitur & spesifikasi alat -->
                                     <h6 class="fw-bold mt-3" style="color: #1D553E;">Fitur & Spesifikasi Alat:</h6>
                                     <ul class="ps-3 mb-2">
                                         <li><strong>Baterai Internal (Portabel):</strong> Beroperasi menggunakan daya baterai isi ulang mandiri dengan saklar fisik ON/OFF.</li>
@@ -261,6 +271,7 @@
                             </h2>
                             <div id="collapseDua" class="accordion-collapse collapse" data-bs-parent="#accordionPanduan">
                                 <div class="accordion-body">
+                                    <!-- prosedur menyalakan alat -->
                                     <h6 class="fw-bold" style="color: #1D553E;">A. Prosedur Menyalakan:</h6>
                                     <ol class="ps-3 mb-3">
                                         <li>Posisikan saklar daya fisik pada bodi alat ke posisi <strong>ON</strong>.</li>
@@ -270,6 +281,7 @@
                                         <li>Setelah proses selesai, antarmuka otomatis beralih ke Menu Utama (Beranda).</li>
                                     </ol>
 
+                                    <!-- indikator baterai & prosedur pengecasan -->
                                     <h6 class="fw-bold" style="color: #1D553E;">B. Indikator Baterai Rendah & Prosedur Pengecasan:</h6>
                                     <ul class="ps-3 mb-2">
                                         <li><strong>Indikasi Baterai Rendah (Lowbat):</strong> Layar sentuh utama akan <strong>berkedip</strong> sebagai sinyal penurunan tegangan daya baterai.</li>
@@ -289,6 +301,7 @@
                             </h2>
                             <div id="collapseTiga" class="accordion-collapse collapse" data-bs-parent="#accordionPanduan">
                                 <div class="accordion-body">
+                                    <!-- penjelasan 5 fungsi menu utama -->
                                     <p class="mb-2">Bilah atas menampilkan parameter Hari, Tanggal, Jam operasional, dan indikator konektivitas Wi-Fi. Menu Utama terdiri dari 5 fungsi:</p>
                                     
                                     <ol class="ps-3 mb-3">
@@ -299,6 +312,7 @@
                                         <li><strong>Tentang:</strong> Informasi pengembang dan data profil operasional alat.</li>
                                     </ol>
 
+                                    <!-- foto tampilan menu beranda -->
                                     <div class="panduan-img-box">
                                         <img src="assets/menu-utama/menu-beranda.jpeg" onerror="this.src='https://placehold.co/600x260/1D553E/white?text=Foto+Menu+Beranda'" alt="Menu Beranda">
                                         <small>[Foto: Tampilan Menu Utama / Beranda]</small>
@@ -316,17 +330,21 @@
                             </h2>
                             <div id="collapseEmpat" class="accordion-collapse collapse" data-bs-parent="#accordionPanduan">
                                 <div class="accordion-body">
+                                    <!-- deskripsi menu langsung timbang -->
                                     <p>Menu ini digunakan untuk pengukuran beban umum tanpa pengikatan data nasabah maupun pengelompokan jenis sampah.</p>
 
+                                    <!-- foto menu langsung timbang -->
                                     <div class="panduan-img-box">
                                         <img src="assets/menu1-langsungtimbang/menu-langsung-timbang.jpeg" onerror="this.src='https://placehold.co/600x260/1D553E/white?text=Foto+Menu+Langsung+Timbang'" alt="Menu Langsung Timbang">
                                         <small>[Foto: Menu Langsung Timbang]</small>
                                     </div>
 
+                                    <!-- langkah petunjuk operasional timbang bebas -->
                                     <h6 class="fw-bold mt-3" style="color: #1D553E;">Petunjuk Operasional:</h6>
                                     <ol class="ps-3 mb-2">
                                         <li>Pilih <strong>Langsung Timbang</strong> pada Beranda.</li>
                                         <li><strong>Pengoperasian Timbang Bebas:</strong>
+                                            <!-- foto halaman timbang bebas -->
                                             <div class="panduan-img-box">
                                                 <img src="assets/menu1-langsungtimbang/halaman-timbang-bebas.jpeg" onerror="this.src='https://placehold.co/600x260/1D553E/white?text=Foto+Halaman+Timbang+Bebas'" alt="Timbang Bebas">
                                                 <small>[Foto: Halaman Timbang Bebas]</small>
@@ -342,6 +360,7 @@
                                             <ul class="ps-3 mb-2">
                                                 <li>Tekan tombol <strong>Harga</strong> pada layar.</li>
                                                 <li>Halaman input harga akan muncul:
+                                                    <!-- foto halaman input harga -->
                                                     <div class="panduan-img-box">
                                                         <img src="assets/menu1-langsungtimbang/halaman-masukkan-harga.jpeg" onerror="this.src='https://placehold.co/600x260/1D553E/white?text=Foto+Input+Harga'" alt="Input Harga">
                                                         <small>[Foto: Halaman Input Harga]</small>
@@ -350,6 +369,7 @@
                                                     - Tekan <strong>Simpan</strong>.
                                                 </li>
                                                 <li>Tampilan berpindah ke <strong>Halaman Timbang dengan Harga</strong>:
+                                                    <!-- foto timbang dengan harga -->
                                                     <div class="panduan-img-box">
                                                         <img src="assets/menu1-langsungtimbang/timbang-dengan-harga.jpeg" onerror="this.src='https://placehold.co/600x260/1D553E/white?text=Foto+Timbang+dengan+Harga'" alt="Timbang dengan Harga">
                                                         <small>[Foto: Halaman Timbang dengan Harga]</small>
@@ -373,8 +393,10 @@
                             </h2>
                             <div id="collapseLima" class="accordion-collapse collapse" data-bs-parent="#accordionPanduan">
                                 <div class="accordion-body">
+                                    <!-- deskripsi menu setor timbang -->
                                     <p>Menu ini merupakan fungsi utama operasional bank sampah untuk memproses transaksi penimbangan, kalkulasi tabungan, dan penyimpanan data ke server.</p>
 
+                                    <!-- foto menu setor timbang -->
                                     <div class="panduan-img-box">
                                         <img src="assets/Menu2-SetorTimbang/menu-setor-timbang.jpeg" onerror="this.src='https://placehold.co/600x260/1D553E/white?text=Foto+Menu+Setor+Timbang'" alt="Menu Setor Timbang">
                                         <small>[Foto: Menu Setor Timbang]</small>
@@ -392,6 +414,7 @@
                                         <li><strong>Pendaftaran Baru:</strong> Jika data belum ada, tekan tombol <strong>+ Tambah Nasabah</strong>.</li>
                                         <li>Pilih baris nama nasabah yang bersangkutan.</li>
                                     </ol>
+                                    <!-- foto halaman pilih nasabah -->
                                     <div class="panduan-img-box">
                                         <img src="assets/Menu2-SetorTimbang/halaman-pilih-nasabah.jpeg" onerror="this.src='https://placehold.co/600x260/1D553E/white?text=Foto+Pilih+Nasabah'" alt="Pilih Nasabah">
                                         <small>[Foto: Halaman Pemilihan Nasabah]</small>
@@ -407,6 +430,7 @@
                                         <li><strong>Kardus:</strong> Langsung menuju proses penimbangan kardus.</li>
                                         <li><strong>Lainnya:</strong> Komoditas khusus di luar kategori baku.</li>
                                     </ul>
+                                    <!-- foto halaman kategori sampah -->
                                     <div class="panduan-img-box">
                                         <img src="assets/Menu2-SetorTimbang/pilih-kategori-sampah.jpeg" onerror="this.src='https://placehold.co/600x260/1D553E/white?text=Foto+Kategori+Sampah'" alt="Kategori Sampah">
                                         <small>[Foto: Halaman Kategori Sampah]</small>
@@ -421,15 +445,18 @@
                                         <li><strong>Kategori Logam:</strong> Alma Kaleng, Kaleng, Tembaga, Besi, dan Logam Lainnya.</li>
                                         <li><strong>Kategori Kardus:</strong> Kardus.</li>
                                     </ul>
+                                    <!-- foto daftar jenis sampah -->
                                     <div class="panduan-img-box">
                                         <img src="assets/Menu2-SetorTimbang/daftar-jenis-sampah.jpeg" onerror="this.src='https://placehold.co/600x260/1D553E/white?text=Foto+Daftar+Jenis+Sampah'" alt="Jenis Sampah">
                                         <small>[Foto: Halaman Daftar Jenis Sampah]</small>
                                     </div>
 
+                                    <!-- info ketentuan kategori lainnya -->
                                     <div class="alert alert-secondary py-2 px-3 small border-0 my-2">
                                         <strong>Ketentuan Kategori "Lainnya":</strong><br>
                                         Sistem akan mengarahkan ke halaman <strong>Masukkan Harga Lainnya</strong>. Masukkan tarif per kilogram yang telah disepakati, lalu tekan <strong>Selanjutnya</strong>. Tarif berlaku untuk transaksi berjalan dan data tercatat permanen.
                                     </div>
+                                    <!-- foto input harga lainnya -->
                                     <div class="panduan-img-box">
                                         <img src="assets/Menu2-SetorTimbang/masukkan-harga-lainnya.jpeg" onerror="this.src='https://placehold.co/600x260/1D553E/white?text=Foto+Input+Harga+Lainnya'" alt="Harga Lainnya">
                                         <small>[Foto: Halaman Input Harga Lainnya]</small>
@@ -443,6 +470,7 @@
                                         <li>Masukkan material sampah ke dalam wadah.</li>
                                         <li>Pastikan nilai angka stabil, kemudian tekan tombol <strong>Lanjut</strong>.</li>
                                     </ol>
+                                    <!-- foto penimbangan sampah -->
                                     <div class="panduan-img-box">
                                         <img src="assets/Menu2-SetorTimbang/halaman-penimbangan-sampah.jpeg" onerror="this.src='https://placehold.co/600x260/1D553E/white?text=Foto+Penimbangan+Sampah'" alt="Penimbangan Sampah">
                                         <small>[Foto: Halaman Penimbangan Sampah]</small>
@@ -452,11 +480,13 @@
                                     <h6 class="fw-bold mt-3" style="color: #1D553E;">Langkah 5: Ringkasan & Eksekusi Transaksi</h6>
                                     <p class="mb-2">Sistem menampilkan rincian: Tanggal Setor, Nama Nasabah, Jenis Sampah, Berat (Kg), Tarif/Kg, dan Total Nilai Transaksi (Berat × Tarif).</p>
                                     
+                                    <!-- foto ringkasan setoran -->
                                     <div class="panduan-img-box">
                                         <img src="assets/Menu2-SetorTimbang/ringkasan-setoran.jpeg" onerror="this.src='https://placehold.co/600x260/1D553E/white?text=Foto+Ringkasan+Setoran'" alt="Ringkasan Setoran">
                                         <small>[Foto: Halaman Ringkasan Transaksi]</small>
                                     </div>
 
+                                    <!-- opsi tombol eksekusi akhir -->
                                     <h6 class="fw-bold mt-2" style="color: #1D553E;">Pilihan Eksekusi Akhir:</h6>
                                     <ol class="ps-3 mb-1">
                                         <li><strong>"Lanjut Transaksi":</strong>
@@ -489,13 +519,16 @@
                             </h2>
                             <div id="collapseEnam" class="accordion-collapse collapse" data-bs-parent="#accordionPanduan">
                                 <div class="accordion-body">
+                                    <!-- deskripsi menu data nasabah -->
                                     <p>Menu ini berfungsi sebagai pangkalan data nasabah pada perangkat timbangan.</p>
 
+                                    <!-- foto menu data nasabah -->
                                     <div class="panduan-img-box">
                                         <img src="assets/Menu3-DataNasabah/menu-data-nasabah.jpeg" onerror="this.src='https://placehold.co/600x260/1D553E/white?text=Foto+Menu+Data+Nasabah'" alt="Menu Data Nasabah">
                                         <small>[Foto: Menu Data Nasabah]</small>
                                     </div>
 
+                                    <!-- navigasi & verifikasi saldo nasabah -->
                                     <h6 class="fw-bold mt-3" style="color: #1D553E;">A. Navigasi & Verifikasi Saldo Nasabah:</h6>
                                     <ol class="ps-3 mb-2">
                                         <li>Buka menu <strong>Data Nasabah</strong>.</li>
@@ -503,11 +536,13 @@
                                         <li>Gunakan navigasi <strong>Prev / Next</strong> atau kolom pencarian untuk memfilter data.</li>
                                         <li>Pilih baris nasabah untuk mengakses <strong>Halaman Detail Nasabah</strong>.</li>
                                     </ol>
+                                    <!-- foto halaman daftar nasabah -->
                                     <div class="panduan-img-box">
                                         <img src="assets/Menu3-DataNasabah/halaman-daftar-nasabah.jpeg" onerror="this.src='https://placehold.co/600x260/1D553E/white?text=Foto+Daftar+Nasabah'" alt="Daftar Nasabah">
                                         <small>[Foto: Halaman Daftar Nasabah]</small>
                                     </div>
 
+                                    <!-- parameter detail nasabah & token -->
                                     <h6 class="fw-bold mt-3" style="color: #1D553E;">B. Parameter Detail Nasabah & Token Verifikasi Penarikan Saldo:</h6>
                                     <p class="mb-2">Parameter yang ditampilkan mencakup:</p>
                                     <ul class="ps-3 mb-2">
@@ -516,6 +551,7 @@
                                         <li>Total Saldo Tabungan (Rp)</li>
                                         <li><strong>Token Penarikan:</strong> Kode keamanan 6-digit otomatis untuk validasi otentikasi pencairan saldo melalui antarmuka web.</li>
                                     </ul>
+                                    <!-- foto detail nasabah & token -->
                                     <div class="panduan-img-box">
                                         <img src="assets/Menu3-DataNasabah/halaman-detail-nasabah.jpg" onerror="this.src='https://placehold.co/600x260/1D553E/white?text=Foto+Detail+Nasabah'" alt="Detail Nasabah">
                                         <small>[Foto: Halaman Detail Nasabah & Token]</small>
@@ -531,6 +567,7 @@
                                         </p>
                                     </div>
 
+                                    <!-- peringatan pengaman hapus data 5x -->
                                     <div class="alert alert-danger py-2 px-3 small border-0 my-2">
                                         <strong>Mekanisme Pengaman Hapus Data (Interlock 5x):</strong><br>
                                         Untuk mencegah penghapusan data akibat ketidaksengajaan:
@@ -541,6 +578,7 @@
                                         </ul>
                                     </div>
 
+                                    <!-- langkah pendaftaran nasabah baru -->
                                     <h6 class="fw-bold mt-3" style="color: #1D553E;">C. Pendaftaran Nasabah Baru:</h6>
                                     <ol class="ps-3 mb-2">
                                         <li>Tekan tombol <strong>+ Tambah Nasabah</strong> pada halaman Data Nasabah.</li>
@@ -548,6 +586,7 @@
                                         <li>Ketik Nama Kepala Keluarga / Nasabah pada field Nama.</li>
                                         <li>Tekan <strong>Simpan</strong>. Data tersimpan di memori perangkat dan dikirim ke server.</li>
                                     </ol>
+                                    <!-- foto halaman tambah nasabah -->
                                     <div class="panduan-img-box">
                                         <img src="assets/Menu3-DataNasabah/halaman-tambah-nasabah.jpeg" onerror="this.src='https://placehold.co/600x260/1D553E/white?text=Foto+Tambah+Nasabah'" alt="Tambah Nasabah">
                                         <small>[Foto: Halaman Tambah Nasabah]</small>
@@ -565,8 +604,10 @@
                             </h2>
                             <div id="collapseTujuh" class="accordion-collapse collapse" data-bs-parent="#accordionPanduan">
                                 <div class="accordion-body">
+                                    <!-- deskripsi menu pengaturan -->
                                     <p>Menu Pengaturan digunakan untuk manajemen sistem dan parameter teknis alat. Terdiri dari 5 sub-menu:</p>
 
+                                    <!-- foto menu pengaturan -->
                                     <div class="panduan-img-box">
                                         <img src="assets/menu4 pengaturan/menu-pengaturan.jpeg" onerror="this.src='https://placehold.co/600x260/1D553E/white?text=Foto+Menu+Pengaturan'" alt="Menu Pengaturan">
                                         <small>[Foto: Menu Pengaturan]</small>
@@ -576,6 +617,7 @@
                                     <h6 class="fw-bold mt-3" style="color: #1D553E;">4.1 Kalibrasi Timbangan (Sensitivitas Load Cell)</h6>
                                     <p class="small text-muted mb-2">Dilakukan saat uji fungsi berkala atau koreksi deviasi nilai beban. Siapkan beban uji dengan nilai massa terverifikasi (contoh: beban standar <strong>5.0 Kg</strong>).</p>
 
+                                    <!-- tahap 1 kalibrasi -->
                                     <div class="border p-2 rounded mb-2 bg-white">
                                         <strong class="small" style="color: #1D553E;">Tahap 1: Nol Beban</strong>
                                         <ul class="small ps-3 mb-1">
@@ -588,6 +630,7 @@
                                         </div>
                                     </div>
 
+                                    <!-- tahap 2 kalibrasi -->
                                     <div class="border p-2 rounded mb-2 bg-white">
                                         <strong class="small" style="color: #1D553E;">Tahap 2: Penempatan Beban Acuan</strong>
                                         <ul class="small ps-3 mb-1">
@@ -602,6 +645,7 @@
                                         </div>
                                     </div>
 
+                                    <!-- tahap 3 kalibrasi -->
                                     <div class="border p-2 rounded mb-2 bg-white">
                                         <strong class="small" style="color: #1D553E;">Tahap 3: Verifikasi Nol & Penyimpanan</strong>
                                         <ul class="small ps-3 mb-1">
@@ -630,6 +674,7 @@
                                         </li>
                                         <li>Tarif baru tersimpan dan otomatis diterapkan pada seluruh transaksi berikutnya.</li>
                                     </ol>
+                                    <!-- foto halaman ubah harga -->
                                     <div class="panduan-img-box">
                                         <img src="assets/menu4 pengaturan/halaman-ubah-harga.jpg" onerror="this.src='https://placehold.co/600x240/1D553E/white?text=Foto+Ubah+Harga'" alt="Ubah Harga">
                                         <small>[Foto: Halaman Ubah Harga Sampah]</small>
@@ -643,6 +688,7 @@
                                         <li>Tekan <strong>Singkronisasi Waktu</strong>.</li>
                                         <li>Saat perangkat terhubung ke internet, modul RTC otomatis menyinkronkan data waktu melalui server NTP.</li>
                                     </ol>
+                                    <!-- foto halaman tanggal & waktu -->
                                     <div class="panduan-img-box">
                                         <img src="assets/menu4 pengaturan/halaman-tanggal-waktu.jpg" onerror="this.src='https://placehold.co/600x240/1D553E/white?text=Foto+Tanggal+Waktu'" alt="Tanggal & Waktu">
                                         <small>[Foto: Halaman Tanggal dan Waktu]</small>
@@ -657,6 +703,7 @@
                                                 <li><strong>Lupakan:</strong> Menghapus profil jaringan tersimpan.</li>
                                                 <li><strong>Cari Wi-Fi:</strong> Memindai jaringan nirkabel sekitar.</li>
                                             </ul>
+                                            <!-- foto halaman info wifi -->
                                             <div class="panduan-img-box my-1">
                                                 <img src="assets/menu4 pengaturan/halaman-info-wifi.jpeg" onerror="this.src='https://placehold.co/600x200/1D553E/white?text=Foto+Info+WiFi'" alt="Info WiFi">
                                                 <small>[Foto: Halaman Info Wi-Fi]</small>
@@ -668,6 +715,7 @@
                                                 <li>Navigasi <strong>Prev / Next</strong> atau <strong>Refresh</strong> untuk memindai ulang.</li>
                                                 <li>Pilih SSID target.</li>
                                             </ul>
+                                            <!-- foto halaman pilih jaringan wifi -->
                                             <div class="panduan-img-box my-1">
                                                 <img src="assets/menu4 pengaturan/pilih-jaringan-wifi.jpeg" onerror="this.src='https://placehold.co/600x200/1D553E/white?text=Foto+Pilih+Jaringan'" alt="Pilih Jaringan">
                                                 <small>[Foto: Halaman Pemilihan SSID Wi-Fi]</small>
@@ -678,6 +726,7 @@
                                                 <li>Ketik kata sandi pada kolom input.</li>
                                                 <li>Tekan tombol <strong>Koneksi (Ikon Wi-Fi)</strong> dan tunggu proses autentikasi.</li>
                                             </ul>
+                                            <!-- foto halaman input sandi wifi -->
                                             <div class="panduan-img-box my-1">
                                                 <img src="assets/menu4 pengaturan/masukkan-password-wif.jpeg" onerror="this.src='https://placehold.co/600x200/1D553E/white?text=Foto+Input+Sandi'" alt="Input Password">
                                                 <small>[Foto: Halaman Input Sandi Wi-Fi]</small>
@@ -685,6 +734,7 @@
                                         </li>
                                     </ol>
 
+                                    <!-- peringatan karakter sandi wifi -->
                                     <div class="alert alert-warning py-2 px-3 small border-0 my-2">
                                         <strong>Spesifikasi Karakter Sandi Wi-Fi:</strong><br>
                                         Driver antarmuka keyboard virtual perangkat hanya menerima karakter <strong>Alfanumerik (A–Z, 0–9)</strong>. Karakter simbol (seperti <code>!</code>, <code>*</code>, <code>#</code>, spasi) tidak didukung. Pastikan SSID dan kata sandi jaringan hanya menggunakan format alfanumerik.
@@ -698,6 +748,7 @@
                                         <li>Tekan <strong>Singkronkan Sekarang</strong>.</li>
                                         <li>Antrean data lokal akan diproses transmisi hingga status antrean bernilai nol.</li>
                                     </ol>
+                                    <!-- foto halaman sinkronisasi data -->
                                     <div class="panduan-img-box">
                                         <img src="assets/menu4 pengaturan/halaman-singkronisasi.jpeg" onerror="this.src='https://placehold.co/600x240/1D553E/white?text=Foto+Sinkronisasi'" alt="Sinkronisasi Data">
                                         <small>[Foto: Halaman Sinkronisasi Data]</small>
@@ -715,12 +766,14 @@
                             </h2>
                             <div id="collapseDelapan" class="accordion-collapse collapse" data-bs-parent="#accordionPanduan">
                                 <div class="accordion-body">
+                                    <!-- rincian 3 sub-menu tentang -->
                                     <p class="mb-2">Menu dokumentasi sistem terbagi atas 3 sub-menu:</p>
                                     <ol class="ps-3 mb-2">
                                         <li><strong>Tentang Kinasih:</strong> Profil kelembagaan Bank Sampah Kinasih dan parameter operasional program.</li>
                                         <li><strong>Tentang Pengembang:</strong> Spesifikasi rancang bangun perangkat keras dan arsitektur sistem timbangan digital.</li>
                                         <li><strong>Tentang Tim KKN Tematik:</strong> Data pelaksana pengabdian masyarakat, perakitan perangkat, dan pendampingan implementasi Kinasih.</li>
                                     </ol>
+                                    <!-- foto menu tentang di timbangan -->
                                     <div class="panduan-img-box">
                                         <img src="assets/menu5-tentang/menu-tentang.jpeg" onerror="this.src='https://placehold.co/600x260/1D553E/white?text=Foto+Menu+Tentang'" alt="Menu Tentang">
                                         <small>[Foto: Menu Tentang Timbangan Kinasih]</small>
@@ -738,6 +791,7 @@
                             </h2>
                             <div id="collapseSembilan" class="accordion-collapse collapse" data-bs-parent="#accordionPanduan">
                                 <div class="accordion-body">
+                                    <!-- spesifikasi tampilan layar sekunder -->
                                     <p>Spesifikasi tampilan pada layar sekunder menghadap nasabah:</p>
                                     <ol class="ps-3 mb-2">
                                         <li><strong>Kondisi Siaga (Standby):</strong> Teks identitas berjalan: <code>KINASIH - Kita Nabung Sampah, Indonesia Bersih</code>.</li>
@@ -749,6 +803,7 @@
                                             </ul>
                                         </li>
                                     </ol>
+                                    <!-- foto layar depan nasabah -->
                                     <div class="panduan-img-box">
                                         <img src="assets/layardepankecil/layar-depan-nasabah.jpeg" onerror="this.src='https://placehold.co/600x240/1D553E/white?text=Foto+Layar+Nasabah'" alt="Layar Nasabah">
                                         <small>[Foto: Tampilan Layar Sekunder Nasabah]</small>
@@ -767,6 +822,7 @@
                             <div id="collapseSepuluh" class="accordion-collapse collapse" data-bs-parent="#accordionPanduan">
                                 <div class="accordion-body">
                                     
+                                    <!-- kendala 1: fluktuasi angka -->
                                     <div class="p-3 mb-2 bg-white rounded border">
                                         <strong class="text-danger d-block">Q1: Angka timbangan di layar berfluktuasi atau tidak kembali ke titik nol?</strong>
                                         <div class="small text-muted mt-1">
@@ -775,6 +831,7 @@
                                         </div>
                                     </div>
 
+                                    <!-- kendala 2: hapus data nasabah -->
                                     <div class="p-3 mb-2 bg-white rounded border">
                                         <strong class="text-danger d-block">Q2: Tombol hapus data nasabah tidak memproses eksekusi?</strong>
                                         <div class="small text-muted mt-1">
@@ -783,6 +840,7 @@
                                         </div>
                                     </div>
 
+                                    <!-- kendala 3: koneksi wifi -->
                                     <div class="p-3 mb-2 bg-white rounded border">
                                         <strong class="text-danger d-block">Q3: Gagal tersambung ke jaringan Wi-Fi?</strong>
                                         <div class="small text-muted mt-1">
@@ -791,6 +849,7 @@
                                         </div>
                                     </div>
 
+                                    <!-- kendala 4: pemutusan daya -->
                                     <div class="p-3 mb-2 bg-white rounded border">
                                         <strong class="text-danger d-block">Q4: Terjadi pemutusan daya saat penimbangan berlangsung, apakah data hilang?</strong>
                                         <div class="small text-muted mt-1">
@@ -798,6 +857,7 @@
                                         </div>
                                     </div>
 
+                                    <!-- kendala 5: sinkronisasi jam & tanggal -->
                                     <div class="p-3 mb-2 bg-white rounded border">
                                         <strong class="text-danger d-block">Q5: Parameter jam dan tanggal pada sistem tidak sesuai?</strong>
                                         <div class="small text-muted mt-1">
@@ -805,6 +865,7 @@
                                         </div>
                                     </div>
 
+                                    <!-- kendala 6: layar berkedip lowbat -->
                                     <div class="p-3 mb-2 bg-white rounded border">
                                         <strong class="text-danger d-block">Q6: Layar sentuh utama berkedip secara periodik?</strong>
                                         <div class="small text-muted mt-1">
@@ -813,6 +874,7 @@
                                         </div>
                                     </div>
 
+                                    <!-- catatan penutup panduan -->
                                     <div class="p-2 mt-3 text-muted small text-center fst-italic">
                                         Buku petunjuk operasional ini disusun sebagai panduan teknis standar bagi pengurus Bank Sampah Kinasih.
                                     </div>
@@ -827,9 +889,11 @@
 
                 <!-- footer modal -->
                 <div class="modal-footer bg-white border-top d-flex justify-content-between p-3">
+                    <!-- tombol unduh pdf di footer modal -->
                     <a href="assets/Panduan-KINASIH.pdf" download class="btn btn-outline-success btn-sm py-2 px-3 fw-semibold" style="border-radius: 6px; color: #1D553E; border-color: #1D553E;">
                         <i class="bi bi-file-earmark-arrow-down-fill me-1"></i> Unduh File PDF
                     </a>
+                    <!-- tombol tutup modal panduan -->
                     <button type="button" class="btn btn-secondary btn-sm py-2 px-3" data-bs-dismiss="modal" style="border-radius: 6px;">
                         Tutup
                     </button>
@@ -838,17 +902,19 @@
             </div>
         </div>
     </div>
-        
+
+    <!-- footer halaman utama -->
     <footer class="text-center py-4">
-    <p class="text-muted small mb-1">© 2026 KINASIH</p>
-    <p class="text-muted small mb-2">Dikembangkan oleh:</p>
-    <button type="button" 
-            class="btn btn-sm btn-outline-success rounded-pill px-3 py-1 shadow-sm"
-            data-bs-toggle="modal" 
-            data-bs-target="#tentangPengembang">
-        <i class="bi bi-people-fill me-1"></i> Eclipse Team
-    </button>
-</footer>
+        <p class="text-muted small mb-1">© 2026 KINASIH</p>
+        <p class="text-muted small mb-2">Dikembangkan oleh:</p>
+        <!-- tombol buka modal tentang pengembang -->
+        <button type="button" 
+                class="btn btn-sm btn-outline-success rounded-pill px-3 py-1 shadow-sm"
+                data-bs-toggle="modal" 
+                data-bs-target="#tentangPengembang">
+            <i class="bi bi-people-fill me-1"></i> Eclipse Team
+        </button>
+    </footer>
 
     <!-- tentang pengembang (eclipse team) -->
     <div class="modal fade" id="tentangPengembang" tabindex="-1" aria-labelledby="judulPengembang" aria-hidden="true">
@@ -872,9 +938,9 @@
                     <!-- profil & logo eclipse team -->
                     <div class="text-center mb-4 p-3 bg-white rounded-3 border">
                         <img src="assets/logo-eclipse.png" 
-                        alt="Logo Eclipse Team" 
-                        class="dev-team-logo mb-2" 
-                        onerror="this.src='https://placehold.co/85x85/1D553E/white?text=ECLIPSE'">
+                             alt="Logo Eclipse Team" 
+                             class="dev-team-logo mb-2" 
+                             onerror="this.src='https://placehold.co/85x85/1D553E/white?text=ECLIPSE'">
                         <h5 class="fw-bold mb-1 text-kinasih">ECLIPSE TEAM</h5>
                         <p class="text-muted small mb-0">
                             Tim Rancang Bangun Perangkat Keras (IoT) & Sistem Informasi Manajemen Bank Sampah KINASIH
@@ -887,21 +953,29 @@
                     </h6>
                     <div class="row g-2 mb-4">
                         
-                        <!-- Anggota 1 -->
+                        <!-- anggota 1: febrian -->
                         <div class="col-12 col-sm-6">
                             <div class="dev-member-card p-3 bg-white rounded-3 border d-flex align-items-center gap-3">
-                                <i class="bi bi-person-circle fs-2 text-kinasih"></i>
+                                <img src="assets/tim/febrian.png" 
+                                     alt="Febrian Eka Putra" 
+                                     class="rounded-circle shadow-sm border border-2 border-success-subtle" 
+                                     style="width: 52px; height: 52px; object-fit: cover;"
+                                     onerror="this.src='https://placehold.co/52x52/1D553E/white?text=FP'">
                                 <div class="lh-sm">
                                     <div class="dev-member-name fw-bold text-dark">Febrian Eka Putra</div>
-                                    <small class="dev-member-role text-muted">Embedded Systems / IoT Developer</small>
+                                    <small class="dev-member-role text-muted">System Architect & IoT Engineer</small>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Anggota 2 -->
+                        <!-- anggota 2: firman -->
                         <div class="col-12 col-sm-6">
                             <div class="dev-member-card p-3 bg-white rounded-3 border d-flex align-items-center gap-3">
-                                <i class="bi bi-person-circle fs-2 text-kinasih"></i>
+                                <img src="assets/tim/firman.png" 
+                                     alt="Firman Reza Alamzah" 
+                                     class="rounded-circle shadow-sm border border-2 border-success-subtle" 
+                                     style="width: 52px; height: 52px; object-fit: cover;"
+                                     onerror="this.src='https://placehold.co/52x52/1D553E/white?text=FR'">
                                 <div class="lh-sm">
                                     <div class="dev-member-name fw-bold text-dark">Firman Reza Alamzah</div>
                                     <small class="dev-member-role text-muted">Frontend Developer</small>
@@ -909,10 +983,14 @@
                             </div>
                         </div>
 
-                        <!-- Anggota 3 -->
+                        <!-- anggota 3: wiwid -->
                         <div class="col-12 col-sm-6">
                             <div class="dev-member-card p-3 bg-white rounded-3 border d-flex align-items-center gap-3">
-                                <i class="bi bi-person-circle fs-2 text-kinasih"></i>
+                                <img src="assets/tim/wiwid.png" 
+                                     alt="Wiwid Pratama" 
+                                     class="rounded-circle shadow-sm border border-2 border-success-subtle" 
+                                     style="width: 52px; height: 52px; object-fit: cover;"
+                                     onerror="this.src='https://placehold.co/52x52/1D553E/white?text=WP'">
                                 <div class="lh-sm">
                                     <div class="dev-member-name fw-bold text-dark">Wiwid Pratama</div>
                                     <small class="dev-member-role text-muted">Backend Developer</small>
@@ -920,13 +998,17 @@
                             </div>
                         </div>
 
-                        <!-- Anggota 4 -->
+                        <!-- anggota 4: yuda -->
                         <div class="col-12 col-sm-6">
                             <div class="dev-member-card p-3 bg-white rounded-3 border d-flex align-items-center gap-3">
-                                <i class="bi bi-person-circle fs-2 text-kinasih"></i>
+                                <img src="assets/tim/yuda.png" 
+                                     alt="Yuda Pratama" 
+                                     class="rounded-circle shadow-sm border border-2 border-success-subtle" 
+                                     style="width: 52px; height: 52px; object-fit: cover;"
+                                     onerror="this.src='https://placehold.co/52x52/1D553E/white?text=YP'">
                                 <div class="lh-sm">
                                     <div class="dev-member-name fw-bold text-dark">Yuda Pratama</div>
-                                    <small class="dev-member-role text-muted">Dokumentasi Teknis</small>
+                                    <small class="dev-member-role text-muted">Documentation</small>
                                 </div>
                             </div>
                         </div>
@@ -961,6 +1043,7 @@
 
                 <!-- footer modal -->
                 <div class="modal-footer bg-white border-top d-flex justify-content-end p-3">
+                    <!-- tombol tutup modal pengembang -->
                     <button type="button" class="btn btn-secondary btn-sm py-2 px-4 btn-tutup-box" data-bs-dismiss="modal">
                         Tutup
                     </button>
