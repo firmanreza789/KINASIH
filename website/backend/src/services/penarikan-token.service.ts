@@ -1,252 +1,650 @@
+// config api & key backend
+const API_URL = "https://kinasih-backend.vercel.app";
+const API_KEY = "kinasih_secret_device_key_2026";
 
-import { Prisma } from "../../generated/prisma/client";
-import { prisma } from "../lib/prisma";
+// elemen form export laporan
+const tanggalMulai = document.getElementById("tanggalMulai");
+const tanggalAkhir = document.getElementById("tanggalAkhir");
+const btnExport = document.getElementById("btnExport");
+const errorTanggal = document.getElementById("errorTanggal");
+const errorMulai = document.getElementById("errorMulai");
+const errorAkhir = document.getElementById("errorAkhir");
+const status = document.getElementById("status");
 
-// =====================================================
-// MEMBUAT SESI PENARIKAN DARI ESP32
-// =====================================================
+// elemen cek saldo
+const noKK = document.getElementById("noKK");
+const btnCekSaldo = document.getElementById("btnCekSaldo");
+const errorKK = document.getElementById("errorKK");
+const saldoResult = document.getElementById("saldoResult");
 
-export async function selectNasabahToken(data: {
-  device_id: string;
-  id_nasabah: number;
-  token: string;
-}) {
-  const { device_id, id_nasabah, token } = data;
+// elemen penarikan saldo
+const tarikNoKK = document.getElementById("tarikNoKK");
+const tarikToken = document.getElementById("tarikToken");
+const tarikNominal = document.getElementById("tarikNominal");
+const btnTarikSaldo = document.getElementById("btnTarikSaldo");
+const errorTarikKK = document.getElementById("errorTarikKK");
+const errorTarikToken = document.getElementById("errorTarikToken");
+const errorTarikNominal = document.getElementById("errorTarikNominal");
+const tarikResult = document.getElementById("tarikResult");
 
-  // Validasi token 6 digit
-  if (!/^\d{6}$/.test(token)) {
-    throw new Error("TOKEN_TIDAK_VALID");
-  }
+// elemen modal tentang pengembang (eclipse team)
+const btnBukaPengembang = document.getElementById("btnBukaPengembang");
+const elModalPengembang = document.getElementById("modalTentangPengembang");
 
-  // Cari nasabah berdasarkan database cloud
-  const nasabah = await prisma.nasabah.findUnique({
-    where: {
-      idNasabah: id_nasabah,
-    },
-  });
+// fungsi bantu format rupiah
+const formatRupiah = (angka) => {
+    return new Intl.NumberFormat("id-ID", {
+        style: "currency",
+        currency: "IDR",
+        minimumFractionDigits: 0
+    }).format(angka || 0);
+};
 
-  if (!nasabah) {
-    throw new Error("NASABAH_NOT_FOUND");
-  }
+// fungsi bantu format tanggal lokal
+const getLocalDateString = (dateVal) => {
+    if (!dateVal) return "";
+    const d = new Date(dateVal);
+    if (isNaN(d.getTime())) return "";
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+};
 
-  // Buat sesi dengan masa berlaku 60 detik
-  const expiresAt = new Date(Date.now() + 60 * 1000);
+// pembersih pesan error otomatis saat user mulai mengetik / memilih tanggal
+const resetErrorTanggal = () => {
+    if (errorMulai) errorMulai.style.display = "none";
+    if (errorAkhir) errorAkhir.style.display = "none";
+    if (errorTanggal) errorTanggal.style.display = "none";
+    if (status) status.innerHTML = "";
+    if (tanggalMulai) tanggalMulai.classList.remove("input-error");
+    if (tanggalAkhir) tanggalAkhir.classList.remove("input-error");
+};
+if (tanggalMulai) {
+    tanggalMulai.addEventListener("input", resetErrorTanggal);
+    tanggalMulai.addEventListener("change", resetErrorTanggal);
+}
+if (tanggalAkhir) {
+    tanggalAkhir.addEventListener("input", resetErrorTanggal);
+    tanggalAkhir.addEventListener("change", resetErrorTanggal);
+}
 
-  const session = await prisma.penarikanSession.create({
-    data: {
-      deviceId: device_id,
-      idNasabah: id_nasabah,
-      token,
-      status: "WAITING",
-      expiresAt,
-    },
-  });
+if (noKK) {
+    noKK.addEventListener("input", function () {
+        if (errorKK) errorKK.style.display = "none";
+        noKK.classList.remove("input-error");
+        if (saldoResult) {
+            saldoResult.style.display = "none";
+            saldoResult.innerHTML = "";
+        }
+    });
+}
 
-  return {
-    id_session: session.idSession,
-    status: session.status,
-    expires_at: session.expiresAt,
-  };
+if (tarikNoKK) {
+    tarikNoKK.addEventListener("input", function () {
+        if (errorTarikKK) errorTarikKK.style.display = "none";
+        tarikNoKK.classList.remove("input-error");
+        if (tarikResult) {
+            tarikResult.style.display = "none";
+            tarikResult.innerHTML = "";
+        }
+    });
+}
+if (tarikToken) {
+    tarikToken.addEventListener("input", function () {
+        if (errorTarikToken) errorTarikToken.style.display = "none";
+        tarikToken.classList.remove("input-error");
+        if (tarikResult) {
+            tarikResult.style.display = "none";
+            tarikResult.innerHTML = "";
+        }
+    });
+}
+if (tarikNominal) {
+    tarikNominal.addEventListener("input", function () {
+        if (errorTarikNominal) errorTarikNominal.style.display = "none";
+        tarikNominal.classList.remove("input-error");
+        if (tarikResult) {
+            tarikResult.style.display = "none";
+            tarikResult.innerHTML = "";
+        }
+    });
 }
 
 
-// =====================================================
-// POLLING STATUS PENARIKAN OLEH ESP32
-// =====================================================
+// 1. export laporan ke excel
+if (btnExport) {
+    btnExport.addEventListener("click", async function () {
+        const mulai = tanggalMulai ? tanggalMulai.value : "";
+        const akhir = tanggalAkhir ? tanggalAkhir.value : "";
+        let valid = true;
 
-export async function pollStatusPenarikan(data: {
-  device_id: string;
-  id_nasabah: number;
-  token: string;
-}) {
-  const { device_id, id_nasabah, token } = data;
+        // validasi tanggal
+        if (!mulai) {
+            if (errorMulai) errorMulai.style.display = "block";
+            if (tanggalMulai) tanggalMulai.classList.add("input-error");
+            valid = false;
+        } else {
+            if (errorMulai) errorMulai.style.display = "none";
+            if (tanggalMulai) tanggalMulai.classList.remove("input-error");
+        }
 
-  const session = await prisma.penarikanSession.findFirst({
-    where: {
-      deviceId: device_id,
-      idNasabah: id_nasabah,
-      token,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
+        if (!akhir) {
+            if (errorAkhir) errorAkhir.style.display = "block";
+            if (tanggalAkhir) tanggalAkhir.classList.add("input-error");
+            valid = false;
+        } else {
+            if (errorAkhir) errorAkhir.style.display = "none";
+            if (tanggalAkhir) tanggalAkhir.classList.remove("input-error");
+        }
 
-  if (!session) {
-    throw new Error("SESI_NOT_FOUND");
-  }
+        if (!valid) {
+            if (status) status.innerHTML = "";
+            return;
+        }
 
-  // Periksa masa berlaku sesi
-  if (
-    session.status === "WAITING" &&
-    session.expiresAt.getTime() <= Date.now()
-  ) {
-    await prisma.penarikanSession.update({
-      where: {
-        idSession: session.idSession,
-      },
-      data: {
-        status: "EXPIRED",
-      },
+        if (mulai > akhir) {
+            if (errorTanggal) errorTanggal.style.display = "block";
+            if (tanggalMulai) tanggalMulai.classList.add("input-error");
+            if (tanggalAkhir) tanggalAkhir.classList.add("input-error");
+            if (status) status.innerHTML = "";
+            return;
+        }
+
+        if (errorTanggal) errorTanggal.style.display = "none";
+        if (tanggalMulai) tanggalMulai.classList.remove("input-error");
+        if (tanggalAkhir) tanggalAkhir.classList.remove("input-error");
+
+        if (status) {
+            status.className = "status-message status-loading";
+            status.innerHTML = `<i class="bi bi-hourglass-split me-1"></i> Menyiapkan laporan...`;
+        }
+        btnExport.disabled = true;
+
+        try {
+            // ambil data timbangan sampah
+            const resTransaksi = await fetch(`${API_URL}/api/transaksi`, {
+                method: 'GET',
+                headers: {
+                    'X-API-KEY': API_KEY,
+                    'Content-Type': 'application/json'
+                }
+            });
+            const resultTransaksi = await resTransaksi.json();
+
+            if (!resTransaksi.ok || !resultTransaksi.success) {
+                throw new Error(resultTransaksi.message || "Gagal mengambil data transaksi");
+            }
+
+            // ambil data penarikan kas
+            let dataPenarikan = [];
+            try {
+                const resPenarikan = await fetch(`${API_URL}/api/penarikan`, {
+                    headers: { 'X-API-KEY': API_KEY, 'Content-Type': 'application/json' }
+                });
+                if (resPenarikan.ok) {
+                    const jsonPenarikan = await resPenarikan.json();
+                    dataPenarikan = Array.isArray(jsonPenarikan) ? jsonPenarikan : (jsonPenarikan.data || []);
+                }
+            } catch (e) {
+                console.warn("data penarikan kosong / belum ada");
+            }
+
+            // ambil data nasabah buat cek sisa saldo terbaru
+            let dataNasabah = [];
+            try {
+                const resNasabah = await fetch(`${API_URL}/api/nasabah`);
+                if (resNasabah.ok) {
+                    const jsonNasabah = await resNasabah.json();
+                    dataNasabah = jsonNasabah.data || [];
+                }
+            } catch (e) {
+                console.warn("gagal load nasabah");
+            }
+
+            // filter transaksi sesuai tanggal yang dipilih
+            const listTransaksi = Array.isArray(resultTransaksi.data) ? resultTransaksi.data : [];
+            const transaksiFilter = listTransaksi.filter(function (item) {
+                const tgl = getLocalDateString(item.tanggal_waktu || item.tanggal);
+                return tgl >= mulai && tgl <= akhir;
+            });
+
+            if (transaksiFilter.length === 0) {
+                if (status) {
+                    status.className = "status-message status-error";
+                    status.innerHTML = `<i class="bi bi-exclamation-circle me-1"></i> Tidak ada transaksi pada periode tersebut.`;
+                }
+                return;
+            }
+
+            // kumpulin total uang ditarik per no kk sesuai periode tanggal
+            const mapPenarikanKK = {};
+            dataPenarikan.forEach(function (p) {
+                const tglP = getLocalDateString(p.tanggal || p.created_at || p.tanggal_penarikan || p.createdAt);
+                if (tglP && (tglP < mulai || tglP > akhir)) {
+                    return;
+                }
+
+                const noKKP = p.no_kk || p.noKK || p.nasabah?.noKK || p.nasabah?.no_kk;
+                const jumlahP = Number(p.jumlahPenarikan || p.jumlah_penarikan || p.jumlah || 0);
+                if (noKKP) {
+                    mapPenarikanKK[noKKP] = (mapPenarikanKK[noKKP] || 0) + jumlahP;
+                }
+            });
+
+            // kelompokkan data berdasarkan no kk biar orang yang sama ngumpul jadi satu
+            const grupNasabah = {};
+
+            transaksiFilter.forEach(function (trx) {
+                const noKKItem = trx.no_kk || trx.noKK || "-";
+                const namaItem = trx.nama || trx.nasabahNama || "-";
+                const tglRaw = trx.tanggal_waktu || trx.tanggal;
+                const tglObj = new Date(tglRaw);
+
+                if (!grupNasabah[noKKItem]) {
+                    grupNasabah[noKKItem] = {
+                        noKK: noKKItem,
+                        nama: namaItem,
+                        items: []
+                    };
+                }
+
+                if (Array.isArray(trx.items)) {
+                    trx.items.forEach(function (detail) {
+                        const berat = Number(detail.berat_kg || detail.berat || 0);
+                        const harga = Number(detail.harga_per_kg || detail.harga || 0);
+                        const setoranMasuk = Number(detail.subtotal || (berat * harga) || 0);
+
+                        grupNasabah[noKKItem].items.push({
+                            timestamp: tglObj.getTime(),
+                            tanggalFormatted: tglObj.toLocaleDateString("id-ID"),
+                            jenisSampah: detail.nama_jenis || detail.jenisSampah || "-",
+                            berat: berat,
+                            harga: harga,
+                            setoranMasuk: setoranMasuk
+                        });
+                    });
+                }
+            });
+
+            // susun baris excel & hitung saldo berjalan per orang
+            const dataLaporan = [];
+
+            Object.values(grupNasabah).forEach(function (nasabah) {
+                // urutkan dari tanggal lama ke baru
+                nasabah.items.sort(function (a, b) {
+                    return a.timestamp - b.timestamp;
+                });
+
+                // cari total uang ditarik si nasabah
+                let totalPenarikanNasabah = mapPenarikanKK[nasabah.noKK] || 0;
+
+                // cari data saldo nasabah di database
+                const nasabahObj = dataNasabah.find(n => String(n.noKK || n.no_kk).trim() === String(nasabah.noKK).trim());
+                const saldoSaatIni = nasabahObj && nasabahObj.saldo !== undefined ? Number(nasabahObj.saldo) : null;
+
+                // jaga-jaga kalau api penarikan backend belum jalan, hitung dari selisih saldo
+                const totalSetoranSemua = nasabah.items.reduce((s, itm) => s + itm.setoranMasuk, 0);
+                if (totalPenarikanNasabah === 0 && saldoSaatIni !== null) {
+                    if (saldoSaatIni < totalSetoranSemua) {
+                        totalPenarikanNasabah = totalSetoranSemua - saldoSaatIni;
+                    }
+                }
+
+                // hitung saldo awal sebelum periode ini biar gak minus / 0 kalau ada penarikan besar
+                let saldoAwal = 0;
+                if (saldoSaatIni !== null) {
+                    const estimasiAwal = saldoSaatIni - totalSetoranSemua + totalPenarikanNasabah;
+                    saldoAwal = Math.max(0, estimasiAwal);
+                }
+
+                let sisaPenarikan = totalPenarikanNasabah;
+                let saldoBerjalan = saldoAwal;
+
+                nasabah.items.forEach(function (item, idx) {
+                    // potong penarikan di baris pertama
+                    let penarikanDiBarisIni = 0;
+                    if (sisaPenarikan > 0 && idx === 0) {
+                        penarikanDiBarisIni = sisaPenarikan;
+                        sisaPenarikan = 0;
+                    }
+
+                    // tambah saldo masuk, kurang uang ditarik
+                    saldoBerjalan = saldoBerjalan + item.setoranMasuk - penarikanDiBarisIni;
+
+                    dataLaporan.push({
+                        No: dataLaporan.length + 1,
+                        Tanggal: item.tanggalFormatted,
+                        "No KK": nasabah.noKK,
+                        "Nama Nasabah": nasabah.nama,
+                        "Jenis Sampah": item.jenisSampah,
+                        "Berat (Kg)": item.berat,
+                        "Harga/Kg": item.harga,
+                        "Setoran Masuk (Rp)": item.setoranMasuk,
+                        "Penarikan Keluar (Rp)": penarikanDiBarisIni,
+                        subtotal: Math.max(0, saldoBerjalan)
+                    });
+                });
+            });
+
+            if (dataLaporan.length === 0) {
+                if (status) {
+                    status.className = "status-message status-error";
+                    status.innerHTML = `<i class="bi bi-exclamation-circle me-1"></i> Tidak ada data rincian transaksi untuk diexport.`;
+                }
+                return;
+            }
+
+            // generate ke file excel
+            const worksheet = XLSX.utils.json_to_sheet(dataLaporan);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Laporan");
+
+            // setting lebar kolom biar rapi
+            worksheet["!cols"] = [
+                { wch: 6 },   // No
+                { wch: 14 },  // Tanggal
+                { wch: 22 },  // No KK
+                { wch: 20 },  // Nama Nasabah
+                { wch: 18 },  // Jenis Sampah
+                { wch: 12 },  // Berat (Kg)
+                { wch: 15 },  // Harga/Kg
+                { wch: 20 },  // Setoran Masuk (Rp)
+                { wch: 22 },  // Penarikan Keluar (Rp)
+                { wch: 18 }   // subtotal
+            ];
+
+            // format cell uang rupiah
+            if (worksheet["!ref"]) {
+                const range = XLSX.utils.decode_range(worksheet["!ref"]);
+                for (let row = 1; row <= range.e.r; row++) {
+                    const cellHarga = worksheet[XLSX.utils.encode_cell({ r: row, c: 6 })];
+                    const cellMasuk = worksheet[XLSX.utils.encode_cell({ r: row, c: 7 })];
+                    const cellKeluar = worksheet[XLSX.utils.encode_cell({ r: row, c: 8 })];
+                    const cellSubtotal = worksheet[XLSX.utils.encode_cell({ r: row, c: 9 })];
+
+                    if (cellHarga && typeof cellHarga.v === "number") cellHarga.z = '"Rp" #,##0';
+                    if (cellMasuk && typeof cellMasuk.v === "number") cellMasuk.z = '"Rp" #,##0';
+                    if (cellKeluar && typeof cellKeluar.v === "number") cellKeluar.z = '"Rp" #,##0';
+                    if (cellSubtotal && typeof cellSubtotal.v === "number") cellSubtotal.z = '"Rp" #,##0';
+                }
+            }
+
+            const namaFile = `Laporan_KINASIH_${mulai}_${akhir}.xlsx`;
+            XLSX.writeFile(workbook, namaFile);
+
+            if (status) {
+                status.className = "status-message status-success";
+                status.innerHTML = `<i class="bi bi-check-circle-fill me-1"></i> Laporan berhasil diexport.`;
+            }
+
+        } catch (error) {
+            console.error(error);
+            if (status) {
+                status.className = "status-message status-error";
+                status.innerHTML = `<i class="bi bi-x-circle me-1"></i> Gagal export laporan. (${error.message})`;
+            }
+        } finally {
+            btnExport.disabled = false;
+        }
     });
+}
 
-    return {
-      success: false,
-      status: "EXPIRED",
-      message: "Sesi penarikan telah kedaluwarsa",
-    };
-  }
 
-  if (session.status === "EXPIRED") {
-    return {
-      success: false,
-      status: "EXPIRED",
-      message: "Sesi penarikan telah kedaluwarsa",
-    };
-  }
+// 2. cek saldo warga
+if (btnCekSaldo) {
+    btnCekSaldo.addEventListener("click", async function () {
+        // hapus semua spasi di no kk (termasuk spasi di tengah)
+        const nomorKK = (noKK ? noKK.value : "").replace(/\s+/g, "");
 
-  if (session.status === "APPROVED") {
-    // Data transaksi akan kita ambil dari tabel penarikan_saldo
-    const penarikan = await prisma.penarikanSaldo.findUnique({
-        where: {
-            idSession: session.idSession,
-        },
+        if (!nomorKK) {
+            if (errorKK) {
+                errorKK.innerHTML = `<i class="bi bi-exclamation-circle me-1"></i> Wajib diisi`;
+                errorKK.style.display = "block";
+            }
+            if (noKK) noKK.classList.add("input-error");
+            if (saldoResult) {
+                saldoResult.style.display = "none";
+                saldoResult.innerHTML = "";
+            }
+            return;
+        }
+
+        if (!/^\d{16}$/.test(nomorKK)) {
+            if (errorKK) {
+                errorKK.innerHTML = `<i class="bi bi-exclamation-circle me-1"></i> Nomor KK harus 16 digit angka`;
+                errorKK.style.display = "block";
+            }
+            if (noKK) noKK.classList.add("input-error");
+            if (saldoResult) {
+                saldoResult.style.display = "none";
+                saldoResult.innerHTML = "";
+            }
+            return;
+        }
+
+        if (errorKK) errorKK.style.display = "none";
+        if (noKK) noKK.classList.remove("input-error");
+
+        if (saldoResult) {
+            saldoResult.style.display = "block";
+            saldoResult.className = "saldo-result status-loading text-center p-3";
+            saldoResult.innerHTML = `<i class="bi bi-hourglass-split me-1"></i> Mengecek saldo...`;
+        }
+        btnCekSaldo.disabled = true;
+
+        try {
+            const response = await fetch(`${API_URL}/api/nasabah`);
+            const result = await response.json();
+
+            if (!response.ok || !result.success) {
+                throw new Error(result.message || "Gagal menghubungi server");
+            }
+
+            const nasabah = result.data.find(function (item) {
+                return String(item.noKK || item.no_kk).trim() === nomorKK;
+            });
+
+            if (!nasabah) {
+                if (saldoResult) {
+                    saldoResult.className = "saldo-result status-error text-danger mt-3 text-center";
+                    saldoResult.innerHTML = `<i class="bi bi-exclamation-triangle me-1"></i> Nomor KK tidak terdaftar dalam sistem.`;
+                }
+            } else {
+                if (saldoResult) {
+                    saldoResult.className = "saldo-result status-success mt-3 p-3 border rounded bg-light text-start";
+                    saldoResult.innerHTML = `
+                        <div style="font-size: 0.9rem; color: #666;">Nama Nasabah:</div>
+                        <div style="font-size: 1.15rem; font-weight: bold; color: #222;">${nasabah.nama}</div>
+                        <hr style="margin: 8px 0;">
+                        <div style="font-size: 0.9rem; color: #666;">Total Saldo Tabungan:</div>
+                        <div style="font-size: 1.35rem; font-weight: bold; color: #1D553E;">
+                            ${formatRupiah(nasabah.saldo)}
+                        </div>
+                    `;
+                }
+            }
+        } catch (error) {
+            console.error(error);
+            if (saldoResult) {
+                saldoResult.className = "saldo-result status-error text-danger mt-3 text-center";
+                saldoResult.innerHTML = `<i class="bi bi-x-circle me-1"></i> Gagal mengambil data saldo. (${error.message})`;
+            }
+        } finally {
+            btnCekSaldo.disabled = false;
+        }
+    });
+}
+
+
+// 3. penarikan saldo kasir
+if (btnTarikSaldo) {
+    btnTarikSaldo.addEventListener("click", async function () {
+        // bersihkan spasi di no kk dan token
+        const noKKVal = (tarikNoKK ? tarikNoKK.value : "").replace(/\s+/g, "");
+        const tokenVal = (tarikToken ? tarikToken.value : "").replace(/\s+/g, "");
+        const nominalVal = Number(tarikNominal ? tarikNominal.value : 0);
+        let valid = true;
+
+        // validasi no kk
+        if (!noKKVal) {
+            errorTarikKK.innerHTML = `<i class="bi bi-exclamation-circle me-1"></i> Wajib diisi`;
+            errorTarikKK.style.display = "block";
+            tarikNoKK.classList.add("input-error");
+            valid = false;
+        } else if (!/^\d{16}$/.test(noKKVal)) {
+            errorTarikKK.innerHTML = `<i class="bi bi-exclamation-circle me-1"></i> Nomor KK harus 16 digit angka`;
+            errorTarikKK.style.display = "block";
+            tarikNoKK.classList.add("input-error");
+            valid = false;
+        } else {
+            errorTarikKK.style.display = "none";
+            tarikNoKK.classList.remove("input-error");
+        }
+
+        // validasi token 6 digit
+        if (!tokenVal) {
+            errorTarikToken.innerHTML = `<i class="bi bi-exclamation-circle me-1"></i> Wajib diisi token`;
+            errorTarikToken.style.display = "block";
+            tarikToken.classList.add("input-error");
+            valid = false;
+        } else if (!/^\d{6}$/.test(tokenVal)) {
+            errorTarikToken.innerHTML = `<i class="bi bi-exclamation-circle me-1"></i> Token harus 6 digit angka`;
+            errorTarikToken.style.display = "block";
+            tarikToken.classList.add("input-error");
+            valid = false;
+        } else {
+            errorTarikToken.style.display = "none";
+            tarikToken.classList.remove("input-error");
+        }
+
+        // validasi nominal
+        if (!nominalVal || nominalVal <= 0) {
+            errorTarikNominal.innerHTML = `<i class="bi bi-exclamation-circle me-1"></i> Masukkan nominal penarikan yang valid`;
+            errorTarikNominal.style.display = "block";
+            tarikNominal.classList.add("input-error");
+            valid = false;
+        } else {
+            errorTarikNominal.style.display = "none";
+            tarikNominal.classList.remove("input-error");
+        }
+
+        if (!valid) {
+            // sembunyikan hasil struk lama jika form error
+            tarikResult.style.display = "none";
+            tarikResult.innerHTML = "";
+            return;
+        }
+
+        tarikResult.style.display = "block";
+        tarikResult.className = "saldo-result status-loading text-center p-3 mt-3";
+        tarikResult.innerHTML = `<i class="bi bi-hourglass-split me-1"></i> Memproses persetujuan penarikan...`;
+        btnTarikSaldo.disabled = true;
+
+        try {
+            // cek saldo nasabah dulu, cukup atau ngga
+            const resNasabah = await fetch(`${API_URL}/api/nasabah`);
+            const dataNasabah = await resNasabah.json();
+
+            if (!resNasabah.ok || !dataNasabah.success) {
+                throw new Error(dataNasabah.message || "Gagal menghubungi database nasabah");
+            }
+
+            const nasabah = dataNasabah.data.find(function (item) {
+                return String(item.noKK || item.no_kk).trim() === noKKVal;
+            });
+
+            if (!nasabah) {
+                throw new Error("Nomor KK tidak terdaftar dalam sistem.");
+            }
+
+            const idNasabahFix = nasabah.id_nasabah || nasabah.idNasabah || nasabah.id;
+            if (!idNasabahFix) {
+                throw new Error("ID nasabah tidak ditemukan pada database.");
+            }
+
+            if (nominalVal > Number(nasabah.saldo)) {
+                throw new Error(`Saldo tidak mencukupi. Saldo saat ini: ${formatRupiah(nasabah.saldo)}`);
+            }
+
+            // kirim approve ke backend
+            const payload = {
+                device_id: "ESP32S3-KINASIH-01",
+                id_nasabah: idNasabahFix,
+                token: tokenVal,
+                jumlah_penarikan: nominalVal,
+                keterangan: "Penarikan tunai pos"
+            };
+
+            const approveRes = await fetch(`${API_URL}/api/penarikan/approve`, {
+                method: "POST",
+                headers: { 
+                    "Content-Type": "application/json",
+                    "X-API-KEY": API_KEY 
+                },
+                body: JSON.stringify(payload)
+            });
+            const approveResult = await approveRes.json();
+
+            if (!approveRes.ok || !approveResult.success) {
+                throw new Error(approveResult.message || "Gagal memproses penarikan saldo");
+            }
+
+            // tampilkan hasil penarikan sukses
+            const saldoSisa = approveResult.data?.saldo_sesudah ?? (Number(nasabah.saldo) - nominalVal);
+
+            tarikResult.className = "saldo-result status-success mt-3 p-3 border rounded bg-light text-start";
+            tarikResult.innerHTML = `
+                <div class="d-flex align-items-center text-success fw-bold mb-2">
+                    <i class="bi bi-check-circle-fill fs-5 me-2"></i> Penarikan Berhasil Disetujui!
+                </div>
+                <div style="font-size: 0.9rem; color: #666;">Nama Nasabah:</div>
+                <div style="font-size: 1.1rem; font-weight: bold; color: #222;">${nasabah.nama}</div>
+                <hr style="margin: 8px 0;">
+                <div class="d-flex justify-content-between mb-1">
+                    <span style="font-size: 0.9rem; color: #666;">Nominal Ditarik:</span>
+                    <span class="fw-bold text-danger">${formatRupiah(nominalVal)}</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span style="font-size: 0.9rem; color: #666;">Sisa Saldo:</span>
+                    <span class="fw-bold text-success">${formatRupiah(saldoSisa)}</span>
+                </div>
+            `;
+
+            // reset input token sama nominal
+            tarikToken.value = "";
+            tarikNominal.value = "";
+
+        } catch (error) {
+            console.error(error);
+            tarikResult.className = "saldo-result status-error text-danger mt-3 text-center";
+            tarikResult.innerHTML = `<i class="bi bi-x-circle me-1"></i> ${error.message}`;
+        } finally {
+            btnTarikSaldo.disabled = false;
+        }
+    });
+}
+
+
+// tentang pengembang (eclipse team) & gambar fallback
+if (btnBukaPengembang && elModalPengembang) {
+    if (typeof bootstrap !== "undefined" && bootstrap.Modal) {
+        const modalPengembang = new bootstrap.Modal(elModalPengembang);
+
+        btnBukaPengembang.addEventListener("click", function (e) {
+            e.preventDefault();
+            modalPengembang.show();
         });
-
-    if (!penarikan) {
-      throw new Error("RIWAYAT_PENARIKAN_NOT_FOUND");
     }
-
-    return {
-      success: true,
-      status: "APPROVED",
-      data: {
-        id_penarikan: penarikan.idPenarikan,
-        jumlah_penarikan: Number(penarikan.jumlahPenarikan),
-        saldo_sebelum: Number(penarikan.saldoSebelum),
-        saldo_sesudah: Number(penarikan.saldoSesudah),
-      },
-    };
-  }
-
-  return {
-    success: true,
-    status: "WAITING",
-    message: "Menunggu persetujuan kasir",
-  };
 }
 
-// =====================================================
-// APPROVE PENARIKAN OLEH FRONTEND
-// =====================================================
-
-export async function approvePenarikanToken(data: {
-  device_id: string;
-  id_nasabah: number;
-  token: string;
-  jumlah_penarikan: number;
-  keterangan?: string;
-}) {
-  const {
-    device_id,
-    id_nasabah,
-    token,
-    jumlah_penarikan,
-    keterangan,
-  } = data;
-
-  if (!Number.isFinite(jumlah_penarikan) || jumlah_penarikan <= 0) {
-    throw new Error("JUMLAH_PENARIKAN_TIDAK_VALID");
-  }
-
-  return prisma.$transaction(async (tx) => {
-
-     // DEBUG: Periksa data yang dikirim web
-    console.log("DATA APPROVE:", {
-      device_id,
-      id_nasabah,
-      token,
-      waktu_server: new Date().toISOString(),
+// ganti otomatis gambar jika file di folder assets belum tersedia
+const fallbackImages = document.querySelectorAll(".img-fallback");
+fallbackImages.forEach(function (img) {
+    img.addEventListener("error", function () {
+        const fallbackUrl = this.getAttribute("data-fallback");
+        if (fallbackUrl && this.src !== fallbackUrl) {
+            this.src = fallbackUrl;
+        }
     });
-        // Cari dan kunci sesi agar tidak disetujui dua kali
-    const now = new Date();
-    const sessions = await tx.$queryRaw<
-      { idSession: number }[]
-    >`
-      SELECT "idSession"
-      FROM "penarikan_sessions"
-      WHERE "device_id" = ${device_id}
-        AND "id_nasabah" = ${id_nasabah}
-        AND "token" = ${token}
-        AND "status" = 'WAITING'
-        AND "expires_at" > ${now}
-      ORDER BY "created_at" DESC
-      LIMIT 1
-      FOR UPDATE
-    `;
-
-    const sessionId = sessions[0]?.idSession;
-
-    if (!sessionId) {
-      throw new Error("SESI_TIDAK_VALID_ATAU_KEDALUWARSA");
-    }
-
-    // Kunci data saldo nasabah
-    await tx.$queryRaw`
-      SELECT "idNasabah"
-      FROM "nasabah"
-      WHERE "idNasabah" = ${id_nasabah}
-      FOR UPDATE
-    `;
-
-    const nasabah = await tx.nasabah.findUnique({
-      where: { idNasabah: id_nasabah },
-    });
-
-    if (!nasabah) {
-      throw new Error("NASABAH_NOT_FOUND");
-    }
-
-    const jumlah = new Prisma.Decimal(String(jumlah_penarikan));
-
-    if (nasabah.saldo.lessThan(jumlah)) {
-      throw new Error("SALDO_TIDAK_CUKUP");
-    }
-
-    const saldoSebelum = nasabah.saldo;
-    const saldoSesudah = saldoSebelum.minus(jumlah);
-
-    await tx.nasabah.update({
-      where: { idNasabah: id_nasabah },
-      data: { saldo: saldoSesudah },
-    });
-
-    const penarikan = await tx.penarikanSaldo.create({
-      data: {
-        idSession: sessionId,
-        idNasabah: id_nasabah,
-        deviceId: device_id,
-        jumlahPenarikan: jumlah,
-        saldoSebelum,
-        saldoSesudah,
-        keterangan,
-      },
-    });
-
-    await tx.penarikanSession.update({
-      where: { idSession: sessionId },
-      data: { status: "APPROVED" },
-    });
-
-    return {
-      success: true,
-      status: "APPROVED",
-      data: {
-        id_penarikan: penarikan.idPenarikan,
-        jumlah_penarikan: Number(penarikan.jumlahPenarikan),
-        saldo_sebelum: Number(penarikan.saldoSebelum),
-        saldo_sesudah: Number(penarikan.saldoSesudah),
-      },
-    };
-  });
-}
+});
